@@ -26,5 +26,6 @@ Este proyecto se distribuye bajo la [Licencia GNU versión 3](LICENSE).
 ## Contacto
 Si tienes alguna pregunta o comentario, no dudes en ponerte en contacto con nosotros:
 
-- Email: jgoezd@unal.edu.co
-- Email: mberrioz@unal.edu.co
+- Jerónimo Vásquez González, email: jevasquez@unal.edu.co
+- Juan Gabriel Goez Duque, email: jgoezd@unal.edu.co
+- Marycielo Berrio Zapata, email: mberrioz@unal.edu.co
