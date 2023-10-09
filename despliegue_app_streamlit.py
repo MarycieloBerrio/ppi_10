@@ -15,7 +15,7 @@ headers = {
 }
 
 # Parámetros de la consulta a la API de IGDB
-body = 'fields name,cover.url; limit 100;'
+body = 'fields name,cover.url; limit 100; sort rating desc; where rating > 70; where rating_count > 1000;'
 
 response = requests.post(url, headers=headers, data=body)
 
