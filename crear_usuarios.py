@@ -43,7 +43,7 @@ def generar_usuarios(cantidad_usuarios:int) -> []:
           "correo": fake.email(),
           "contraseña": fake.password(),
       }
-    usuarios.append(usuario)
+        usuarios.append(usuario)
 
     return usuarios
 
@@ -51,6 +51,7 @@ def generar_usuarios(cantidad_usuarios:int) -> []:
 usuarios_falsos = generar_usuarios(1000)
 # Convertir los usuarios en un dataframe de pandas
 df_usuarios = pd.DataFrame(usuarios_falsos)
+
 
 # Generar el archivo CSV
 generar_archivo_csv(df_usuarios)
