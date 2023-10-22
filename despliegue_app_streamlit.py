@@ -2,16 +2,6 @@ import streamlit as st
 import requests
 import json
 
-# Añade algo de CSS personalizado a la aplicación
-st.markdown("""
-    <style>
-        body {
-            background-color: #000000;
-            color: #FFFFFF;
-        }
-    </style>
-    """, unsafe_allow_html=True)
-
 # Título de la página
 st.title("50 videojuegos que deberías probar")
 
@@ -25,7 +15,8 @@ headers = {
 }
 
 # Parámetros de la consulta a la API de IGDB
-body = 'fields name,cover.url; limit 100; sort rating desc; where rating > 70; where rating_count > 1000;'
+body = 'fields name,cover.url; limit 100; sort rating desc;\
+        where rating > 70; where rating_count > 1000;'
 
 response = requests.post(url, headers=headers, data=body)
 
@@ -75,7 +66,7 @@ developers = [
 
 # Crea el HTML para el pie de página
 footer_html = """
-<footer style='width: 100%; background-color: #333; padding: 20px 0; color: #fff;'>
+<footer style='width: 100%; background-color: #fff; padding: 20px 0; color: #333;'>
     <div style='max-width: 600px; margin: auto; text-align: left;'>
         <h2 style='margin-bottom: 20px;'>Información de contacto</h2>
 """
