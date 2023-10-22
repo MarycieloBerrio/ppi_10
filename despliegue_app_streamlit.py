@@ -66,7 +66,7 @@ developers = [
 
 # Crea el HTML para el pie de página
 footer_html = """
-<footer style='width: 100%; background-color: #333; padding: 20px 0; color: #fff;'>
+<footer style='width: 100%; background-color: #FFFFFF; padding: 20px 0; color: #FFFFFF;'>
     <div style='max-width: 600px; margin: auto; text-align: left;'>
         <h2 style='margin-bottom: 20px; color: #FFD700;'>Información de contacto</h2>
 """
