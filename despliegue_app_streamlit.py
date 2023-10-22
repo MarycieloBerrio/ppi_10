@@ -2,6 +2,16 @@ import streamlit as st
 import requests
 import json
 
+# Añade algo de CSS personalizado a la aplicación
+st.markdown("""
+    <style>
+        body {
+            background-color: #000000;
+            color: #FFFFFF;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
 # Título de la página
 st.title("50 videojuegos que deberías probar")
 
