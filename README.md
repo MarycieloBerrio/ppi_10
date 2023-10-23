@@ -1,7 +1,9 @@
 # Sistema de Recomendación Personalizado
 
 ## Descripción
-Este proyecto es un sistema de recomendación de videojuegos que utiliza algoritmos de filtrado colaborativo para proporcionar recomendaciones personalizadas a los usuarios en función de sus gustos y preferencias. 
+Este proyecto es un sistema de recomendación de videojuegos que utiliza algoritmos de filtrado colaborativo para proporcionar recomendaciones personalizadas a los usuarios en función de sus gustos y preferencias.
+
+Link de la app: https://gamerscompanion1.streamlit.app
 
 ## Instalación
 
