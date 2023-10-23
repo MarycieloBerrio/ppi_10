@@ -51,11 +51,12 @@ if game_name:
         
         # Muestra la portada del juego en la columna de la izquierda
         if 'cover' in game_info[0] and 'url' in game_info[0]['cover']:
-            image_url = 'https://images.igdb.com/igdb/image/upload/t_cover_big/'
-            + game_info[0]['cover']['url'].split('/')[-1]
+            image_url = ('https://images.igdb.com/igdb/image/upload/t_cover_big/'
+                         + game_info[0]['cover']['url'].split('/')[-1])
             col1.image(image_url, use_column_width=True)
         else:
             st.write("Imagen no disponible")
+
 
         # Muestra la información del juego en la columna de la derecha
         col2.write(f"**Sinopsis:** {game_info[0]['summary']}" if 'summary' in game_info[0] else "Sinopsis no disponible")
