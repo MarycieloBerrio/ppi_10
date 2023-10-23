@@ -10,12 +10,12 @@
 
 | Actividad | Descripción | Encargado | Estado |
 | --- | --- | --- | --- |
-| Crear base de datos de usuarios | Se crea la base de datos que contiene a los usuarios registrados. | Juan Gabriel Goez Duque | Sin empezar |
-| Sign-up / Sign-in | Se crean las funcionalidades de iniciar sesión y registrarse. | Juan Gabriel Goez Duque | Sin empezar |
+| Crear base de datos de usuarios | Se crea la base de datos que contiene a los usuarios registrados. | Juan Gabriel Goez Duque | En desarrollo |
+| Sign-up / Sign-in | Se crean las funcionalidades de iniciar sesión y registrarse. | Juan Gabriel Goez Duque | Finalizado |
 | Estadísticas de usuario | Se crea la visualización de estadísticas del usuario, esto es: Videojuegos que está jugando, que quiere jugar y que tiene en pausa. | Jerónimo Vásquez Gonzalez | Sin empezar |
-| Reseñas de usuarios | Se crea una funcionalidad para que los usuarios puedan dejar reseñas en los videojuegos marcados como jugados. | Jerónimo Vásquez González | Sin empezar |
-| Interfaz gráfica top 50 videojuegos | Se muestra el top 50 de videojuegos obtenidos de la base de datos con usuarios aleatorios / nuevos. | Marycielo Berrio Zapata | Sin empezar |
-| Datos de los videojuegos | Se crea la funcionalidad de poder ver los datos específicos del juego que elija el usuario. | Marycielo Berrio Zapata | Sin empezar |
+| Reseñas de usuarios | Se crea una funcionalidad para que los usuarios puedan dejar reseñas en los videojuegos marcados como jugados. | Jerónimo Vásquez González | En desarrollo |
+| Interfaz gráfica top 50 videojuegos | Se muestra el top 50 de videojuegos obtenidos de la base de datos con usuarios aleatorios / nuevos. | Marycielo Berrio Zapata | Finalizado |
+| Datos de los videojuegos | Se crea la funcionalidad de poder ver los datos específicos del juego que elija el usuario. | Marycielo Berrio Zapata | Finalizado |
 
 # Informe 5 (30/OCT/2023)
 
