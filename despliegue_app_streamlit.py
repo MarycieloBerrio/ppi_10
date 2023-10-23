@@ -40,10 +40,10 @@ if response.status_code == 200:
             count += 1
 
             # Añade el juego a la fila HTML
-            row_html += f"<td style='border: none; width: 100px; height: 200px;
-                        text-align: center; vertical-align: top;'><img src='{image_url}'
-                        style='width: 100px; object-fit: contain;'/><br/><div style='width:
-                        100px; word-wrap: break-word;'>{game['name']}</div></td>"
+            row_html += f"<td style='border: none; width: 100px; height: 200px; text-align:\
+                        center; vertical-align: top;'><img src='{image_url}'style='width: 100px;\
+                        object-fit: contain;'/><br/><div style='width: 100px; word-wrap: break-word;\
+                        '>{game['name']}</div></td>"
 
             # Si se han añadido tres juegos a la fila, muestra la fila y comienza una nueva
             if count % 5 == 0:
@@ -71,8 +71,8 @@ footer_html = """
 """
 
 for dev in developers:
-    footer_html += f"<p style='margin-bottom: 10px;'><strong>{dev['name']}</strong>: <a 
-                href='mailto:{dev['email']}' style='color: #fff;'>{dev['email']}</a></p>"
+    footer_html += f"<p style='margin-bottom: 10px;'><strong>{dev['name']}</strong>:\
+                    <a href='mailto:{dev['email']}' style='color: #fff;'>{dev['email']}</a></p>"
 
 footer_html += """
     </div>
