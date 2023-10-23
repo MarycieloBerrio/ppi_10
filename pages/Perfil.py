@@ -10,7 +10,7 @@ if st.button("Mostrar Perfil"):
     st.write("Apellido: Pérez")
     st.write("Género: Masculino")
     st.write("Género Favorito: Aventuras")
-    st.write(f"Correo Electrónico: Jevasquez@unal.edu.co")
+    st.write(f"Correo Electrónico: {st.session_state}")
     st.subheader("Juegos Calificados")
     st.write("5")  
     st.subheader("Juegos Finalizados")
