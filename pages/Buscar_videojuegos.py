@@ -1,4 +1,4 @@
-from streamlit_igbd_test import local_css
+from Inicio import local_css
 import streamlit as st
 import pandas as pd
 import requests
