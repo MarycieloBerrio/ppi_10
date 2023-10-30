@@ -17,7 +17,6 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-
 def local_css(file_name):
     """
     Carga un documento css y lo renderiza en la página.
@@ -168,3 +167,4 @@ if st.session_state.count == 0:
 # Se actualiza el contador para mantener el valor
 # de logged_in entre paginas
 st.session_state.count += 1
+
