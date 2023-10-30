@@ -50,6 +50,7 @@ def obtener_nombre_usuario(user_correo):
 
     return None  # Si no se encuentra el correo en la hoja
 
+
 def obtener_apellido_usuario(user_correo):
     """
     Obtiene el apellido de usuario correspondiente a un correo 
@@ -186,7 +187,6 @@ def obtener_sexo_usuario(user_correo):
 
     return None  # Si no se encuentra el correo en la hoja
 
-
 def validar_credenciales(user_correo, user_contrasena):
     """
     Valida las credenciales de un usuario en una hoja de Google Sheets.
@@ -247,13 +247,37 @@ if st.button("Iniciar sesión"):
         st.error("Usuario o contraseña incorrectos")
         st.session_state['logged_in'] = False
 
- 
-
-
 # Se verifica si el usuario está logeado para que aparezca
 # el boton de deslogeo
 if st.session_state['logged_in'] == True:
     
     if st.button("Cerrar sesión"):
         st.session_state['logged_in']  = False
+
+# Variable para controlar si el usuario ha iniciado sesión
+logged_in = False
+
+if st.button("Iniciar sesión"):
+    # Verifica las credenciales
+    if validar_credenciales(correo, contrasena):
+        st.success("Inicio de sesión exitoso")
+        st.session_state = correo
+        logged_in = True
+    else:
+        st.error("Usuario o contraseña incorrectos")
+
+if logged_in:
+    if st.button("Cerrar sesión"):
+        logged_in = False  # Cerrar la sesión
+        st.session_state = None
+
+# Verificar si el usuario ha iniciado sesión
+if logged_in:
+    nombre_usuario = obtener_nombre_usuario(correo)
+    if nombre_usuario:
+        st.write(f"Bienvenido, {nombre_usuario}")
+    else:
+        st.warning("No se pudo obtener el nombre del usuario")
+else:
+    st.warning("Por favor inicia sesión")
 

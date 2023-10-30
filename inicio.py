@@ -128,3 +128,4 @@ if st.session_state.count == 0:
 # Se actualiza el contador para mantener el valor
 # de logged_in entre paginas
 st.session_state.count += 1
+

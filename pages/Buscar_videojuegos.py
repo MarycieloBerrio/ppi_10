@@ -28,6 +28,8 @@ def get_game_info(game_name):
     """
     
     # Define la URL y los encabezados para la solicitud de la API.
+    """Define la URL y los encabezados para la solicitud de la API."""
+
     url = 'https://api.igdb.com/v4/games'
     headers = {'Client-ID': 'ju1vfy05jqstzoclqv1cs2hsomw1au', 'Authorization': f'Bearer {api_key}'}
 
@@ -67,12 +69,13 @@ if game_name:
             col1.image(image_url, use_column_width=True)
         else:
             st.write("Imagen no disponible")
-        
+
         # Muestra la información del juego en la columna de la derecha
         col2.write(f"**Sinopsis:** {game_info[0]['summary']}" if 'summary' in game_info[0] else "Sinopsis no disponible")
         col2.write(f"**Desarrollador:** {game_info[0]['involved_companies'][0]['company']['name']}" if 'involved_companies' in game_info[0] and game_info[0]['involved_companies'] else "Desarrollador no disponible")
         col2.write(f"**Plataformas:** {', '.join([platform['name'] for platform in game_info[0]['platforms']])}" if 'platforms' in game_info[0] and game_info[0]['platforms'] else "Plataformas no disponibles")
-        
+
+       
         # Se verifica si el usuario está logeado para que aparezca
         # la funcionalidad de calificar el juego
         if st.session_state['logged_in']:
@@ -81,3 +84,7 @@ if game_name:
         
     else:
         st.write("Lo siento, no pude encontrar ningún juego con ese nombre.")
+
+    else:
+        st.write("Lo siento, no pude encontrar ningún juego con ese nombre.")
+
