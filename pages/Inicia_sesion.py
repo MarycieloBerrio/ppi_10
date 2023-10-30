@@ -1,9 +1,12 @@
-"""Módulo con todo lo necesario para el inicio de sesión de un usuario
-además de manejar el cierre de sesión"""
+"""
+Módulo con todo lo necesario para el inicio de sesión de un usuario
+además de manejar el cierre de sesión
+"""
 
 # importar las liberías requeridas
-import streamlit as st # pip install streamlit
-import gspread # pip install gspread
+import streamlit as st 
+# pip install gspread
+import gspread 
 # pip install oauth2cliente
 from oauth2client.service_account import ServiceAccountCredentials
 

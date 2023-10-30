@@ -1,3 +1,9 @@
+"""
+Este módulo genera toda la pantalla de inicio, además
+de ser la página que streamlit lee por defecto para 
+mostrar al usuario la aplicación
+"""
+# Importar las librerías requeridas
 import json
 import requests
 import streamlit as st
@@ -11,7 +17,15 @@ st.set_page_config(
 
 
 def local_css(file_name):
-    """Define la función local_css."""
+    """
+    Carga un documento css y lo renderiza en la página.
+
+    Parameters:
+    file_name: Nombre del archivo a renderizar
+
+    Returns:
+    None.
+    """
     with open(file_name) as f:
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
