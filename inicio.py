@@ -1,6 +1,8 @@
+# Importar las librerias requeridas
 import json
 import requests
 import streamlit as st
+from st_clickable_images import clickable_images
 
 # Configura el título y el favicon de la página
 st.set_page_config(
@@ -25,20 +27,18 @@ url_imagen = "https://i.imgur.com/qQH31fg.png?1"
 # Añade la imagen como encabezado de la aplicación de Streamlit
 st.image(url_imagen)
 
-# URL de la API de IGDB
-url = "https://api.igdb.com/v4/games"
-
-# Credenciales para la API de IGDB
-headers = {
+# URL y credenciales para la API de IGDB
+URL = "https://api.igdb.com/v4/games"
+HEADERS = {
     'Client-ID': 'ju1vfy05jqstzoclqv1cs2hsomw1au',
     'Authorization': 'Bearer 8h1ymcezojqdpcvmz5fvwxal2myoxp',
 }
 
 # Parámetros de la consulta a la API de IGDB
-body = 'fields name,cover.url; limit 100; sort rating desc;\
+BODY = 'fields id,name,cover.url; limit 100; sort rating desc;\
         where rating > 70; where rating_count > 1000;'
 
-response = requests.post(url, headers=headers, data=body)
+response = requests.post(URL, headers=HEADERS, data=BODY)
 
 # Comprueba si la solicitud fue exitosa
 if response.status_code == 200:
@@ -48,11 +48,10 @@ if response.status_code == 200:
     # Contador para llevar un registro de cuántos juegos se han mostrado
     count = 0
 
-    # Inicializa la fila HTML con el estilo de borde
-    row_html = "<table style='border-color: #fff;'><tr>"
-
-    # Muestra los juegos en Streamlit
-    for game in games:
+if st.experimental_get_query_params()['page'][0] == 'main':
+    image_urls = []
+    game_ids = []
+    for i, game in enumerate(games):
         if 'cover' in game and count < 50:
             image_url = game['cover']['url'].replace('t_thumb', 't_cover_big')
             image_url = 'https:' + image_url
@@ -60,22 +59,61 @@ if response.status_code == 200:
             # Incrementa el contador
             count += 1
 
-            # Añade el juego a la fila HTML
-            row_html += f"<td style='border-top: 1px solid #e7e7e7; border-\
-                        bottom: 1px solid #e7e7e7;border-left: 0px solid \
-                        #0e1117; border-right: 0px solid #0e1117; width: \
-                        100px; height: 200px; text-align: center; vertical-\
-                        align: top;'><img src='{image_url}'style='width: 100px;\
-                        object-fit: contain;'/><br/><div style='width: 100px; \
-                        word-wrap: break-word;color: #e7e7e7;'>{game['name']}\
-                        </div></td>"
+            # Añade la URL de la imagen y el ID del juego a las listas
+            image_urls.append(image_url)
+            game_ids.append(game['id'])
 
-            # Si se han añadido cinco juegos a la fila comienza una nueva
-            if count % 5 == 0:
-                row_html += "</tr></table>"
-                st.write(row_html, unsafe_allow_html=True)
-                row_html = "<table><tr>"
+    # Muestra las imágenes como imágenes clicables
+    clicked = clickable_images(image_urls, key='games')
 
+    # Si se hace clic en una imagen, redirige a la página de detalles del juego
+    if clicked > -1:
+        st.experimental_set_query_params(page='details',
+                                         game_id=game_ids[clicked])
+
+elif st.experimental_get_query_params()['page'][0] == 'details':
+    game_id = st.experimental_get_query_params()['game_id'][0]
+
+    # Define la consulta para buscar el juego por ID
+    body = f'fields name, summary, involved_companies.company.name,\
+            platforms.name, cover.url; where id = {game_id};'
+
+    # Realiza la solicitud a la API
+    response = requests.post(URL, headers=HEADERS, data=body)
+
+    # Obtiene los detalles del juego en formato JSON
+    game_info = response.json()
+
+    # Verifica si se obtuvo alguna información del juego
+    if game_info:
+        # Muestra el nombre del juego como título de la página
+        st.title(game_info[0]['name'])
+
+        # Crea dos columnas para mostrar la imagen y la información del juego
+        col1, col2 = st.columns(2)
+
+        # Muestra la imagen del juego en la columna de la izquierda
+        if 'cover' in game_info[0] and 'url' in game_info[0]['cover']:
+            image_url = ('https://images.igdb.com/igdb/image/upload/t_cover_big/'
+                        + game_info[0]['cover']['url'].split('/')[-1])
+            col1.image(image_url, use_column_width=True)
+        else:
+            st.write("Imagen no disponible")
+
+        # Muestra la información del juego en la columna de la derecha
+        col2.markdown(f"**Sinopsis:** {game_info[0]['summary']}")
+        col2.markdown(f"**Desarrollador:** \
+                        {game_info[0]['involved_companies'][0]['company']['name']}")
+        col2.markdown(f"**Plataformas:** \
+                        {', '.join([platform['name'] \
+                                    for platform in game_info[0]['platforms']])}")
+    else:
+        st.write("Lo siento, no pude encontrar ningún juego con ese ID.")
+    
+    # Muestra un botón "Volver"
+    if st.button('Volver', key='volver'):
+        st.experimental_set_query_params(page='main')
+            
 # Información de los desarrolladores
 developers = [
     {"name": "Juan Gabriel Goez Duque ", "email": "jgoezd@unal.edu.co"},
