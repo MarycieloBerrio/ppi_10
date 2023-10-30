@@ -85,6 +85,5 @@ if game_name:
     else:
         st.write("Lo siento, no pude encontrar ningún juego con ese nombre.")
 
-    else:
-        st.write("Lo siento, no pude encontrar ningún juego con ese nombre.")
+    
 
