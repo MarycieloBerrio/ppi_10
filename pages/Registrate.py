@@ -2,6 +2,9 @@
 Módulo con todo lo pertinente al registro de usuarios.
 Se utiliza la API de googlesheets como backend.
 """
+# Importación de librería estándar de python
+from datetime import datetime
+
 # Importar las librerías necesarias
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
@@ -22,11 +25,15 @@ hoja = client.open("Usuarios_bd").sheet1
 # Página de streamlit
 st.title("Formulario de Registro")
 
+# Establecer un mínimo para la fecha
+MIN_FECHA_NAC = datetime(1940, 1, 1)
 # Datos personales
 nombre = st.text_input("Nombre")
 apellido = st.text_input("Apellido")
-fecha_nacimiento = st.date_input("Fecha de Nacimiento")
-genero = st.selectbox("Género", ["Femenino", "Masculino", "Prefiero no decirlo"])
+fecha_nacimiento = st.date_input("Fecha de Nacimiento",
+                                  min_value= MIN_FECHA_NAC)
+genero = st.selectbox("Género", ["Femenino", "Masculino",
+                                  "Prefiero no decirlo"])
 videojuego_preferido = st.selectbox("Género de Videojuego Preferido",
                                      ["Estrategia", "Acción", "Sci-fi",
                                        "Misterio", "Horror", "Aventura"])
