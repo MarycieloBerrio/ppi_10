@@ -61,6 +61,13 @@ if response.status_code == 200:
     # Contador para llevar un registro de cuántos juegos se han mostrado
     count = 0
 
+    query_params = st.experimental_get_query_params().keys()
+    if 'page' not in query_params:
+        st.experimental_set_query_params(
+       
+            page = 'main'
+        )
+
     if st.experimental_get_query_params()['page'][0] == 'main':
         image_urls = []
         game_ids = []
