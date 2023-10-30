@@ -1,4 +1,10 @@
-# Importar las librerias requeridas
+"""
+Este módulo genera toda la pantalla de inicio, además
+de ser la página que streamlit lee por defecto para 
+mostrar al usuario la aplicación
+"""
+
+# Importar librerias requeridas
 import json
 import requests
 import streamlit as st
@@ -13,7 +19,15 @@ st.set_page_config(
 
 
 def local_css(file_name):
-    """Define la función local_css."""
+    """
+    Carga un documento css y lo renderiza en la página.
+
+    Parameters:
+    file_name: Nombre del archivo a renderizar
+
+    Returns:
+    None.
+    """
     with open(file_name) as f:
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
@@ -48,71 +62,69 @@ if response.status_code == 200:
     # Contador para llevar un registro de cuántos juegos se han mostrado
     count = 0
 
-if st.experimental_get_query_params()['page'][0] == 'main':
-    image_urls = []
-    game_ids = []
-    for i, game in enumerate(games):
-        if 'cover' in game and count < 50:
-            image_url = game['cover']['url'].replace('t_thumb', 't_cover_big')
-            image_url = 'https:' + image_url
+    if st.experimental_get_query_params()['page'][0] == 'main':
+        image_urls = []
+        game_ids = []
+        for i, game in enumerate(games):
+            if 'cover' in game and count < 50:
+                image_url = game['cover']['url'].replace('t_thumb', 't_cover_big')
+                image_url = 'https:' + image_url
 
-            # Incrementa el contador
-            count += 1
+                # Incrementa el contador
+                count += 1
 
-            # Añade la URL de la imagen y el ID del juego a las listas
-            image_urls.append(image_url)
-            game_ids.append(game['id'])
+                # Añade la URL de la imagen y el ID del juego a las listas
+                image_urls.append(image_url)
+                game_ids.append(game['id'])
 
-    # Muestra las imágenes como imágenes clicables
-    clicked = clickable_images(image_urls, key='games')
+        # Muestra las imágenes como imágenes clicables
+        clicked = clickable_images(image_urls, key='games')
 
-    # Si se hace clic en una imagen, redirige a la página de detalles del juego
-    if clicked > -1:
-        st.experimental_set_query_params(page='details',
-                                         game_id=game_ids[clicked])
+        # Si se hace clic en una imagen, redirige a la página de detalles del juego
+        if clicked > -1:
+            st.experimental_set_query_params(page='details', game_id=game_ids[clicked])
 
-elif st.experimental_get_query_params()['page'][0] == 'details':
-    game_id = st.experimental_get_query_params()['game_id'][0]
+    elif st.experimental_get_query_params()['page'][0] == 'details':
+        game_id = st.experimental_get_query_params()['game_id'][0]
 
-    # Define la consulta para buscar el juego por ID
-    body = f'fields name, summary, involved_companies.company.name,\
-            platforms.name, cover.url; where id = {game_id};'
+        # Define la consulta para buscar el juego por ID
+        body = f'fields name, summary, involved_companies.company.name,\
+                platforms.name, cover.url; where id = {game_id};'
 
-    # Realiza la solicitud a la API
-    response = requests.post(URL, headers=HEADERS, data=body)
+        # Realiza la solicitud a la API
+        response = requests.post(URL, headers=HEADERS, data=body)
 
-    # Obtiene los detalles del juego en formato JSON
-    game_info = response.json()
+        # Obtiene los detalles del juego en formato JSON
+        game_info = response.json()
 
-    # Verifica si se obtuvo alguna información del juego
-    if game_info:
-        # Muestra el nombre del juego como título de la página
-        st.title(game_info[0]['name'])
+        # Verifica si se obtuvo alguna información del juego
+        if game_info:
+            # Muestra el nombre del juego como título de la página
+            st.title(game_info[0]['name'])
 
-        # Crea dos columnas para mostrar la imagen y la información del juego
-        col1, col2 = st.columns(2)
+            # Crea dos columnas para mostrar la imagen y la información del juego
+            col1, col2 = st.columns(2)
 
-        # Muestra la imagen del juego en la columna de la izquierda
-        if 'cover' in game_info[0] and 'url' in game_info[0]['cover']:
-            image_url = ('https://images.igdb.com/igdb/image/upload/t_cover_big/'
-                        + game_info[0]['cover']['url'].split('/')[-1])
-            col1.image(image_url, use_column_width=True)
+            # Muestra la imagen del juego en la columna de la izquierda
+            if 'cover' in game_info[0] and 'url' in game_info[0]['cover']:
+                image_url = ('https://images.igdb.com/igdb/image/upload/t_cover_big/'
+                            + game_info[0]['cover']['url'].split('/')[-1])
+                col1.image(image_url, use_column_width=True)
+            else:
+                st.write("Imagen no disponible")
+
+            # Muestra la información del juego en la columna de la derecha
+            col2.markdown(f"**Sinopsis:** {game_info[0]['summary']}")
+            col2.markdown(f"**Desarrollador:** \
+                            {game_info[0]['involved_companies'][0]['company']['name']}")
+            col2.markdown(f"**Plataformas:** \
+                            {', '.join([platform['name'] for platform in game_info[0]['platforms']])}")
         else:
-            st.write("Imagen no disponible")
-
-        # Muestra la información del juego en la columna de la derecha
-        col2.markdown(f"**Sinopsis:** {game_info[0]['summary']}")
-        col2.markdown(f"**Desarrollador:** \
-                        {game_info[0]['involved_companies'][0]['company']['name']}")
-        col2.markdown(f"**Plataformas:** \
-                        {', '.join([platform['name'] \
-                                    for platform in game_info[0]['platforms']])}")
-    else:
-        st.write("Lo siento, no pude encontrar ningún juego con ese ID.")
-    
-    # Muestra un botón "Volver"
-    if st.button('Volver', key='volver'):
-        st.experimental_set_query_params(page='main')
+            st.write("Lo siento, no pude encontrar ningún juego con ese ID.")
+        
+        # Muestra un botón "Volver" que llama a la función 'volver' cuando se hace clic
+        if st.button('Volver', key='volver'):
+            st.experimental_set_query_params(page='main')
             
 # Información de los desarrolladores
 developers = [
@@ -143,3 +155,16 @@ st.write("<br/><br/><br/><br/>", unsafe_allow_html=True)
 
 # Muestra el pie de página en Streamlit
 st.markdown(footer_html, unsafe_allow_html=True)
+
+# Se crea un contador para la sesión de estado
+if 'count' not in st.session_state:
+    st.session_state.count = 0
+
+# Se crea la variable logged_in si es la primera vez
+# que ingresa
+if st.session_state.count == 0:
+    st.session_state.logged_in = False
+
+# Se actualiza el contador para mantener el valor
+# de logged_in entre paginas
+st.session_state.count += 1
