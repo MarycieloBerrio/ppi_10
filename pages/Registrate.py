@@ -9,6 +9,9 @@ from datetime import datetime
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import streamlit as st
+import streamlit.components.v1 as components
+from streamlit_modal import Modal
+
 
 # Realizar la conexión a google sheets
 scope = ["https://spreadsheets.google.com/feeds",
@@ -45,6 +48,18 @@ contrasena = st.text_input("Contraseña", type="password")
 # Agregar una variable de verificación
 usuario_existente = False
 
+modal = Modal("Politica de tratamiento de datos", key="PTD")
+
+if st.button("Politica de tratamiento de datos"):
+   
+    modal.open()
+   
+if modal.is_open():
+    with modal.container():
+        st.markdown("<span style=\"color:#000000\">En nuestra empresa, recolectamos datos relevantes con el consentimiento del usuario para mejorar nuestros servicios. Esta información puede incluir detalles personales como nombre o preferencias. Utilizamos estos datos para personalizar la experiencia del usuario y mejorar nuestros servicios, manteniendo la seguridad y protección de la información almacenada. Respetamos los derechos de los usuarios sobre sus datos, ofreciendo opciones para acceder, corregir o eliminar su información personal. Nunca compartimos datos personales con terceros sin consentimiento, a menos que sea requerido por ley. Esta política forma parte de nuestro compromiso con la privacidad y la seguridad de los datos de nuestros usuarios.</span>", unsafe_allow_html=True)
+
+value = st.checkbox("Aceptar politica de tratamiento de datos")
+
 if st.button("Registrar"):
     # Verificar si el correo ya existe en la hoja de Google Sheets
     valores = hoja.col_values(6)
@@ -53,20 +68,24 @@ if st.button("Registrar"):
         usuario_existente = True
         st.error("El usuario ya se encuentra registrado.")
     else:
-        # Crear un diccionario con los datos del usuario
-        usuario = {
-            "Nombre": nombre,
-            "Apellido": apellido,
-            "Fecha de Nacimiento": fecha_nacimiento.strftime("%Y-%m-%d"),
-            "Género": genero,
-            "Género de videojuego preferido": videojuego_preferido,
-            "Correo": correo,
-            "Contraseña": contrasena
-        }
+        if value:
+            # Crear un diccionario con los datos del usuario
+            usuario = {
+                "Nombre": nombre,
+                "Apellido": apellido,
+                "Fecha de Nacimiento": fecha_nacimiento.strftime("%Y-%m-%d"),
+                "Género": genero,
+                "Género de videojuego preferido": videojuego_preferido,
+                "Correo": correo,
+                "Contraseña": contrasena
+            }
 
-        # Añadir una fila a la hoja de Google Sheets y registrar al usuario
-        nueva_fila = [usuario["Nombre"], usuario["Apellido"], usuario["Fecha de Nacimiento"],
-                      usuario["Género"], usuario["Género de videojuego preferido"],
-                      usuario["Correo"], usuario["Contraseña"]]
-        hoja.append_row(nueva_fila)
-        st.success("¡Registro exitoso!")
+            # Añadir una fila a la hoja de Google Sheets y registrar al usuario
+            nueva_fila = [usuario["Nombre"], usuario["Apellido"], usuario["Fecha de Nacimiento"],
+                        usuario["Género"], usuario["Género de videojuego preferido"],
+                        usuario["Correo"], usuario["Contraseña"]]
+            hoja.append_row(nueva_fila)
+            st.success("¡Registro exitoso!")
+            value = False
+        else:
+            st.error("No has aceptado la politica de tratamiendo de datos")
