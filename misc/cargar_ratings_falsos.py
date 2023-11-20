@@ -5,10 +5,10 @@ contiene información sobre videojuegos, hasta la base de datos
 en googlesheets.
 """
 # Importar las librerías necesarias
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
 import numpy as np
 import pandas as pd
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 
 # Se establece la URL con los datos de los videojuegos
 RUTA = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQjgWQ8jWpgtMLjkxOfOfRN\

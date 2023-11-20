@@ -22,6 +22,9 @@ client = gspread.authorize(creds)
 # Abrir la hoja de Google Sheets
 hoja = client.open("Usuarios_bd").sheet1
 
+# Obtener el número de usuarios actual
+num_usuarios = len(hoja.get_all_records())
+
 # Página de streamlit
 st.title("Formulario de Registro")
 
@@ -53,6 +56,8 @@ if st.button("Registrar"):
         usuario_existente = True
         st.error("El usuario ya se encuentra registrado.")
     else:
+        # Generar el ID único numérico
+        usuario_id = num_usuarios + 1
         # Crear un diccionario con los datos del usuario
         usuario = {
             "Nombre": nombre,
@@ -61,12 +66,13 @@ if st.button("Registrar"):
             "Género": genero,
             "Género de videojuego preferido": videojuego_preferido,
             "Correo": correo,
-            "Contraseña": contrasena
+            "Contraseña": contrasena,
+            "ID_Usuario": usuario_id
         }
 
         # Añadir una fila a la hoja de Google Sheets y registrar al usuario
         nueva_fila = [usuario["Nombre"], usuario["Apellido"], usuario["Fecha de Nacimiento"],
                       usuario["Género"], usuario["Género de videojuego preferido"],
-                      usuario["Correo"], usuario["Contraseña"]]
+                      usuario["Correo"], usuario["Contraseña"], usuario["ID_Usuario"]]
         hoja.append_row(nueva_fila)
         st.success("¡Registro exitoso!")
