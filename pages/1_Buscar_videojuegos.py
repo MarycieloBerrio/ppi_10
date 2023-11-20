@@ -9,7 +9,7 @@ st.set_page_config(
 )
 
 # Configura tu clave API de IGDB
-api_key = '8h1ymcezojqdpcvmz5fvwxal2myoxp'
+api_key = 'nw5q3ov9xfk9o0vsv1vqicx4xbvjbb'
 
 
 def get_game_info(game_name):

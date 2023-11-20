@@ -38,7 +38,7 @@ st.image(url_title)
 URL = "https://api.igdb.com/v4/games"
 HEADERS = {
     'Client-ID': 'ju1vfy05jqstzoclqv1cs2hsomw1au',
-    'Authorization': 'Bearer 8h1ymcezojqdpcvmz5fvwxal2myoxp',
+    'Authorization': 'Bearer nw5q3ov9xfk9o0vsv1vqicx4xbvjbb',
 }
 
 # Parámetros de la consulta a la API de IGDB
