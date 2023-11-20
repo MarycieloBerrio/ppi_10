@@ -2,6 +2,22 @@ import streamlit as st
 import pandas as pd
 import requests
 
+from streamlit import session_state
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
+
+# Realizar la conexión a google sheets
+scope = ["https://spreadsheets.google.com/feeds",
+         "https://www.googleapis.com/auth/spreadsheets",
+         "https://www.googleapis.com/auth/drive.file",
+         "https://www.googleapis.com/auth/drive.file"]
+
+creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
+client = gspread.authorize(creds)
+
+# Abrir la hoja de Google Sheets
+hoja = client.open("Usuarios_bd").get_worksheet(2)
+
 # Configura el título y el favicon de la página
 st.set_page_config(
     page_title="Gamer's Companion",
@@ -41,10 +57,12 @@ def get_game_info(game_name):
     # Devuelve los datos del juego
     return response.json()
 
-# Titulo de la pagina
-url_title = "https://i.imgur.com/xqohjCG.png"
-st.markdown(f'<img src="{url_title}" alt="Encabezado" style="width: 100%;">',
-            unsafe_allow_html=True)
+def borrar_comentario(indice):
+    hoja.delete_row(indice)
+
+
+# Crea una barra de búsqueda en Streamlit
+game_name = st.text_input('Busca un videojuego')
 
 # Si se introduce un nombre de juego, busca la información del juego
 if game_name:
@@ -77,10 +95,46 @@ if game_name:
         # Se verifica si el usuario está logeado para que aparezca
         # la funcionalidad de calificar el juego
         if st.session_state['logged_in']:
-            new_rating = st.selectbox("Calificar este juego:", options=[0, 1, 2, 3, 4, 5])
-            st.write(f"Has calificado {game_info[0]['name']} con {new_rating} ★")
+             borrar = False
+             new_rating = st.selectbox("Calificar este juego:", options=[0, 1, 2, 3, 4, 5])
+             st.write(f"Has calificado {game_info[0]['name']} con {new_rating} ★")
+
+            
+             correos = hoja.col_values(2)
+             juegos = hoja.col_values(3)
+            
+             comentado = False
+             for i in range(1,len(correos)):
+                if correos[i] == st.session_state.correo and juegos[i] == game_name:
+                    comentado = True
+            
+             if comentado == False:
+                # Crear el text area para los comentarios
+                text_area = st.text_area("Comentario:", max_chars=100)
+                if st.button("Enviar"):
+                    nueva_fila = [text_area, st.session_state.correo, game_name]
+                    hoja.append_row(nueva_fila)
+                    st.success("¡Comentario realizado!")
+               
+                    
+             else:
+                st.write("Ya has escrito un comentario en este juego")
+                st.write("Borralo, para poder escribir otro")
+                if st.button("Borrar comentario"):
+                    indice = 2
+                    correos = hoja.col_values(2)  # Supongamos que los correos están en la columna A
+                    juegos = hoja.col_values(3)  # Supongamos que los juegos están en la columna B
+                        
+                    for i in range(1, len(correos)):
+                        if correos[i] == st.session_state.correo and juegos[i] == game_name:  
+                            borrar_comentario(indice)
+                            st.success("Has borrado tu comentario")
+                            break
+                        else:
+                            indice += 1
         
     else:
         st.write("Lo siento, no pude encontrar ningún juego con ese nombre.")
 
-    
+   
+
