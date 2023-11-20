@@ -33,7 +33,6 @@ client = gspread.authorize(creds)
 # Abrir la hoja de Google Sheets
 hoja = client.open("Usuarios_bd").sheet1
 
-<<<<<<< HEAD:pages/Registrate.py
 # Obtener el número de usuarios actual
 num_usuarios = len(hoja.get_all_records())
 
