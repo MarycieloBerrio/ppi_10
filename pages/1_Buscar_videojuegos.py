@@ -1,3 +1,4 @@
+# Importar las liberías requeridas
 import streamlit as st
 import pandas as pd
 import requests
