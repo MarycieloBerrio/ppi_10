@@ -1,7 +1,15 @@
 import streamlit as st
 
+# Configura el título y el favicon de la página
+st.set_page_config(
+    page_title="Gamer's Companion",
+    page_icon="https://i.imgur.com/HaQOhdz.png",
+)
+
 # Título de la aplicación
-st.title("Perfil de Usuario")
+url_title = "https://i.imgur.com/yIp4W2Z.png"
+st.markdown(f'<img src="{url_title}" alt="Encabezado" style="width: 100%;">',
+            unsafe_allow_html=True)
 
 # Se verifica si el usuario está logeado
 if st.session_state['logged_in']:
