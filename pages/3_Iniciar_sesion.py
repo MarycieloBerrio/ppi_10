@@ -294,12 +294,8 @@ if st.button("Iniciar sesión"):
         st.error("Usuario o contraseña incorrectos")
         st.session_state['logged_in'] = False
 
-# Se verifica si el usuario está logeado para que aparezca
-# el boton de deslogeo
-if st.session_state['logged_in'] == True:
-    
+elif st.session_state['logged_in']:
+     # Título de la aplicación
+    st.title("Log-out")
     if st.button("Cerrar sesión"):
-        st.session_state['logged_in']  = False
-
-
-
+        st.session_state['logged_in']  = False  
