@@ -10,6 +10,17 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import streamlit as st
 
+# Configura el título y el favicon de la página
+st.set_page_config(
+    page_title="Gamer's Companion",
+    page_icon="https://i.imgur.com/HaQOhdz.png",
+)
+
+# Título de la aplicación
+url_title = "https://i.imgur.com/WPJInDQ.png"
+st.markdown(f'<img src="{url_title}" alt="Encabezado" style="width: 100%;">',
+            unsafe_allow_html=True)
+
 # Realizar la conexión a google sheets
 scope = ["https://spreadsheets.google.com/feeds",
          "https://www.googleapis.com/auth/spreadsheets",
@@ -22,12 +33,15 @@ client = gspread.authorize(creds)
 # Abrir la hoja de Google Sheets
 hoja = client.open("Usuarios_bd").sheet1
 
+<<<<<<< HEAD:pages/Registrate.py
 # Obtener el número de usuarios actual
 num_usuarios = len(hoja.get_all_records())
 
 # Página de streamlit
 st.title("Formulario de Registro")
 
+=======
+>>>>>>> main:pages/4_Registrate.py
 # Establecer un mínimo para la fecha
 MIN_FECHA_NAC = datetime(1940, 1, 1)
 # Datos personales
