@@ -15,7 +15,7 @@ creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", sco
 client = gspread.authorize(creds)
 
 # Abrir la hoja de Google Sheets
-hoja = client.open("Usuarios_bd").get_worksheet(2)
+hoja = client.open("Usuarios_bd").get_worksheet(1)
 
 
 # Configura el título y el favicon de la página
