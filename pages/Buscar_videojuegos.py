@@ -41,8 +41,10 @@ def get_game_info(game_name):
     # Devuelve los datos del juego
     return response.json()
 
-# Crea una barra de búsqueda en Streamlit
-game_name = st.text_input('Busca un videojuego')
+# Titulo de la pagina
+url_title = "https://i.imgur.com/xqohjCG.png"
+st.markdown(f'<img src="{url_title}" alt="Encabezado" style="width: 100%;">',
+            unsafe_allow_html=True)
 
 # Si se introduce un nombre de juego, busca la información del juego
 if game_name:
