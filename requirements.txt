@@ -76,3 +76,4 @@ validators==0.22.0
 watchdog==3.0.0
 Werkzeug==2.2.3
 zipp==3.17.0
+streamlit_modal==0.1.0
