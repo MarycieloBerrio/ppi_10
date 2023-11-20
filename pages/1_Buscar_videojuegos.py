@@ -25,7 +25,7 @@ st.set_page_config(
 )
 
 # Configura tu clave API de IGDB
-api_key = '8h1ymcezojqdpcvmz5fvwxal2myoxp'
+api_key = 'nw5q3ov9xfk9o0vsv1vqicx4xbvjbb'
 
 
 def get_game_info(game_name):
@@ -57,12 +57,17 @@ def get_game_info(game_name):
     # Devuelve los datos del juego
     return response.json()
 
+
 def borrar_comentario(indice):
     hoja.delete_row(indice)
 
 
 # Crea una barra de búsqueda en Streamlit
 game_name = st.text_input('Busca un videojuego')
+
+
+# Crea una barra de búsqueda en Streamlit
+game_name = st.text_input(' ')
 
 # Si se introduce un nombre de juego, busca la información del juego
 if game_name:
@@ -82,7 +87,7 @@ if game_name:
         if 'cover' in game_info[0] and 'url' in game_info[0]['cover']:
             image_url = ('https://images.igdb.com/igdb/image/upload/t_cover_big/'
                          + game_info[0]['cover']['url'].split('/')[-1])
-            col1.image(image_url, use_column_width=False)
+            col1.image(image_url, use_column_width=True)
         else:
             st.write("Imagen no disponible")
 
@@ -135,6 +140,3 @@ if game_name:
         
     else:
         st.write("Lo siento, no pude encontrar ningún juego con ese nombre.")
-
-   
-
