@@ -1,6 +1,3 @@
-from inicio import local_css
-import streamlit as st
-import requests
 import streamlit as st
 import requests
 from streamlit import session_state
@@ -23,11 +20,14 @@ hoja = client.open("Usuarios_bd").get_worksheet(2)
 
 # Configura el título y el favicon de la página
 st.set_page_config(
-    page_title="Gamer's Companion 🎮",
-    page_icon="🎮",
+    page_title="Gamer's Companion",
+    page_icon="https://i.imgur.com/HaQOhdz.png",
 )
 
-local_css('style.css')
+# Título de la aplicación
+url_title = "https://i.imgur.com/kpJuEpB.png"
+st.markdown(f'<img src="{url_title}" alt="Encabezado" style="width: 100%;">',
+            unsafe_allow_html=True)
 
 data = hoja.get_all_values()
 comentarios = pd.DataFrame(data[1:], columns=data[0])
