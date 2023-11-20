@@ -15,7 +15,7 @@ HEADERS = {
 
 
 BODY = 'fields id,name,summary,cover.url,involved_companies.company.name,total_rating;\
-      limit 100; sort total_rating desc; where total_rating > 70 & total_rating_count > 1000;'
+      limit 150; sort total_rating desc; where total_rating > 50 & total_rating_count > 500;'
 
 response = requests.post(URL, headers=HEADERS, data=BODY)
 data = response.json()

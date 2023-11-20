@@ -1,87 +1,71 @@
-"""
-Este módulo genera votos aleatorios por parte de usuarios falsos. Además
-carga datos aleatorios desde el local, usando un Dataframe de pandas que 
-contiene información sobre videojuegos, hasta la base de datos
-en googlesheets.
-"""
 # Importar las librerías necesarias
-import numpy as np
-import pandas as pd
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+import pandas as pd
+import numpy as np
 
-# Se establece la URL con los datos de los videojuegos
-RUTA = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQjgWQ8jWpgtMLjkxOfOfRN\
-DrHzTNS-dSINU5zcfWZTvkYnU07ezFGlBdkJoWjp805NbecrQmSQrjfR/pub?output=xlsx"
-
-# Se carga los datos
-dataset = pd.read_excel(RUTA)
-
-# Obtenemos la columna de interés
-dataset = dataset["Nombre"]
-
-# Crear una lista de videojuegos
-videojuegos = dataset.shape[0]
-
-# TODO: Hacer la generación con ID's númericos
-# Generar usuarios aleatorios con IDs únicos
-NUM_USUARIOS = 13
-usuarios = ["Usuario_" + str(i) for i in range(NUM_USUARIOS)]
-
-# Crear un DataFrame para los votos de los usuarios
-data = pd.DataFrame(index=dataset)
-
-# Generar votos aleatorios para los usuarios y agregarlos directamente al DataFrame de data
-for usuario in usuarios:
-    if usuario == "Usuario_0":
-        # Generar un usuario que vote 1 en todos los videojuegos
-        data[usuario] = np.random.randint(1, 2, size=videojuegos)
-    elif usuario == "Usuario_1":
-        # Generar un usuario que vote 2 en todos los videojuegos
-        data[usuario] = np.random.randint(2, 3, size=videojuegos)
-    elif usuario == "Usuario_2":
-        # Generar un usuario que vote 3 en todos los videojuegos
-        data[usuario] = np.random.randint(3, 4, size=videojuegos)
-    elif usuario == "Usuario_3":
-        # Generar un usuario que vote 4 en todos los videojuegos
-        data[usuario] = np.random.randint(4, 5, size=videojuegos)
-    elif usuario == "Usuario_4":
-        # Generar un usuario que vote 5 en todos los videojuegos
-        data[usuario] = np.random.randint(5, 6, size=videojuegos)
-    elif usuario == "Usuario_5":
-        # Generar un usuario que vote entre 1 y 2
-        data[usuario] = np.random.randint(1, 3, size=videojuegos)
-    elif usuario == "Usuario_6":
-        # Generar un usuario que vote entre 2 y 3
-        data[usuario] = np.random.randint(2, 4, size=videojuegos)
-    elif usuario == "Usuario_7":
-        # Generar un usuario que vote entre 3 y 4
-        data[usuario] = np.random.randint(3, 5, size=videojuegos)
-    elif usuario == "Usuario_8":
-        # Generar un usuario que vote entre 4 y 5
-        data[usuario] = np.random.randint(4, 6, size=videojuegos)
-    else:
-        # Generar usuarios que voten en un rango entre 1 y 5
-        data[usuario] = np.random.randint(1, 6, size=videojuegos)
-
-# Realizar la conexión a google sheets
+# Autenticación y acceso a Google Sheets
 scope = ["https://spreadsheets.google.com/feeds",
          "https://www.googleapis.com/auth/spreadsheets",
          "https://www.googleapis.com/auth/drive.file",
-         "https://www.googleapis.com/auth/drive.file"]
+         "https://www.googleapis.com/auth/drive"]
+
 creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
 client = gspread.authorize(creds)
 
-# Abrir la hoja de Google Sheets
-hoja_google = client.open("Usuarios_bd")
+# Leer los datos de Sheet1 (usuarios)
+sheet_users = client.open("Usuarios_bd").worksheet("Sheet1")
+users_data = pd.DataFrame(sheet_users.get_all_records())
 
-# Nombre de la nueva hoja
-NUEVA_HOJA_NOMBRE = "Usuarios_rating"
+# Leer los datos de Info_Juegos (juegos)
+sheet_games = client.open("Usuarios_bd").worksheet("Info_Juegos")
+games_data = pd.DataFrame(sheet_games.get_all_records())
 
-# Crear una nueva hoja en la hoja de Google Sheets
-nueva_hoja = hoja_google.add_worksheet(title=NUEVA_HOJA_NOMBRE, rows=1, cols=1)
+# Obtener los IDs de usuario y juego
+user_ids = users_data['ID_Usuario']
+game_ids = games_data['ID_JUEGO']
 
-# Actualizar la hoja con los datos del Dataframe
-nueva_hoja.update([data.columns.values.tolist()] + data.values.tolist())
+# Crear un DataFrame para las calificaciones de los usuarios a los juegos
+ratings_data = pd.DataFrame(index=game_ids, columns=user_ids)
 
-print(f"DataFrame guardado en la nueva hoja de Google Sheets: {NUEVA_HOJA_NOMBRE}")
+# Generar calificaciones aleatorias para los usuarios a los juegos
+for user_id in user_ids:
+    if user_id == 0:
+        # Generar un usuario que califique con 1 todos los juegos
+        ratings_data[user_id] = np.random.randint(1, 2, size=len(game_ids))
+    elif user_id == 1:
+        # Generar un usuario que califique con 2 todos los juegos
+        ratings_data[user_id] = np.random.randint(2, 3, size=len(game_ids))
+
+    elif user_id == 2:
+        # Generar un usuario que califique con 3 todos los juegos
+        ratings_data[user_id] = np.random.randint(3, 4, size=len(game_ids))
+    elif user_id == 3:
+        # Generar un usuario que califique con 4 todos los juegos
+        ratings_data[user_id] = np.random.randint(4, 5, size=len(game_ids))
+    elif user_id == 4:
+        # Generar un usuario que califique con 5 todos los juegos
+        ratings_data[user_id] = np.random.randint(5, 6, size=len(game_ids))
+    elif user_id == 5:
+        # Generar un usuario que califique entre 1 y 2 todos los juegos
+        ratings_data[user_id] = np.random.randint(1, 3, size=len(game_ids))
+    elif user_id == 6:
+        # Generar un usuario que califique entre 2 y 3 todos los juegos
+        ratings_data[user_id] = np.random.randint(2, 4, size=len(game_ids))
+    elif user_id == 7:
+        # Generar un usuario que califique entre 3 y 4 todos los juegos
+        ratings_data[user_id] = np.random.randint(3, 5, size=len(game_ids))
+    elif user_id == 8:
+        # Generar un usuario que califique entre 4 y 5 todos los juegos
+        ratings_data[user_id] = np.random.randint(4, 6, size=len(game_ids))
+    else:
+        # Generar usuarios que califiquen entre 1 y 5 todos los juegos
+        ratings_data[user_id] = np.random.randint(1, 6, size=len(game_ids))
+
+# Subir los datos a una nueva hoja de Google Sheets con los ID de usuario como columnas y ID de juego como índices
+new_worksheet = client.open("Usuarios_bd").add_worksheet("Usuarios_rating",
+                                                          rows=len(ratings_data.index) + 1,
+                                                          cols=len(ratings_data.columns))
+
+# Actualizar la hoja con los datos del DataFrame transpuesto
+new_worksheet.update([ratings_data.index.values.tolist()] + ratings_data.values.T.tolist())
