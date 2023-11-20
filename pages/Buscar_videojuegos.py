@@ -1,15 +1,12 @@
-from inicio import local_css
 import streamlit as st
 import pandas as pd
 import requests
 
 # Configura el título y el favicon de la página
 st.set_page_config(
-    page_title="Gamer's Companion 🎮",
-    page_icon="🎮",
+    page_title="Gamer's Companion",
+    page_icon="https://i.imgur.com/HaQOhdz.png",
 )
-
-local_css("style.css")
 
 # Configura tu clave API de IGDB
 api_key = '8h1ymcezojqdpcvmz5fvwxal2myoxp'
@@ -26,9 +23,8 @@ def get_game_info(game_name):
     -str: Información del juego.
     -imagen: Imagen de la portada del juego.
     """
-    
+
     # Define la URL y los encabezados para la solicitud de la API.
-    """Define la URL y los encabezados para la solicitud de la API."""
 
     url = 'https://api.igdb.com/v4/games'
     headers = {'Client-ID': 'ju1vfy05jqstzoclqv1cs2hsomw1au', 'Authorization': f'Bearer {api_key}'}
@@ -66,7 +62,7 @@ if game_name:
         if 'cover' in game_info[0] and 'url' in game_info[0]['cover']:
             image_url = ('https://images.igdb.com/igdb/image/upload/t_cover_big/'
                          + game_info[0]['cover']['url'].split('/')[-1])
-            col1.image(image_url, use_column_width=True)
+            col1.image(image_url, use_column_width=False)
         else:
             st.write("Imagen no disponible")
 
@@ -86,4 +82,3 @@ if game_name:
         st.write("Lo siento, no pude encontrar ningún juego con ese nombre.")
 
     
-
