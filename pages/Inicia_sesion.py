@@ -11,8 +11,16 @@ import gspread
 from streamlit import session_state
 from oauth2client.service_account import ServiceAccountCredentials
 
+# Configura el título y el favicon de la página
+st.set_page_config(
+    page_title="Gamer's Companion",
+    page_icon="https://i.imgur.com/HaQOhdz.png",
+)
+
 # Título de la aplicación
-st.title("Login")
+url_title = "https://i.imgur.com/gf0JGeU.png"
+st.markdown(f'<img src="{url_title}" alt="Encabezado" style="width: 100%;">',
+            unsafe_allow_html=True)
 
 # Formulario de login
 correo = st.text_input("Correo")
