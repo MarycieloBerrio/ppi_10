@@ -1,4 +1,3 @@
-from inicio import local_css
 import streamlit as st
 import pandas as pd
 import requests
@@ -21,14 +20,12 @@ hoja = client.open("Usuarios_bd").get_worksheet(2)
 
 # Configura el título y el favicon de la página
 st.set_page_config(
-    page_title="Gamer's Companion 🎮",
-    page_icon="🎮",
+    page_title="Gamer's Companion",
+    page_icon="https://i.imgur.com/HaQOhdz.png",
 )
 
-local_css("style.css")
-
 # Configura tu clave API de IGDB
-api_key = '8h1ymcezojqdpcvmz5fvwxal2myoxp'
+api_key = 'nw5q3ov9xfk9o0vsv1vqicx4xbvjbb'
 
 
 def get_game_info(game_name):
@@ -42,9 +39,8 @@ def get_game_info(game_name):
     -str: Información del juego.
     -imagen: Imagen de la portada del juego.
     """
-    
+
     # Define la URL y los encabezados para la solicitud de la API.
-    """Define la URL y los encabezados para la solicitud de la API."""
 
     url = 'https://api.igdb.com/v4/games'
     headers = {'Client-ID': 'ju1vfy05jqstzoclqv1cs2hsomw1au', 'Authorization': f'Bearer {api_key}'}
@@ -61,12 +57,17 @@ def get_game_info(game_name):
     # Devuelve los datos del juego
     return response.json()
 
+
 def borrar_comentario(indice):
     hoja.delete_row(indice)
 
 
 # Crea una barra de búsqueda en Streamlit
 game_name = st.text_input('Busca un videojuego')
+
+
+# Crea una barra de búsqueda en Streamlit
+game_name = st.text_input(' ')
 
 # Si se introduce un nombre de juego, busca la información del juego
 if game_name:
@@ -139,6 +140,3 @@ if game_name:
         
     else:
         st.write("Lo siento, no pude encontrar ningún juego con ese nombre.")
-
-   
-

@@ -13,6 +13,17 @@ import streamlit.components.v1 as components
 from streamlit_modal import Modal
 
 
+# Configura el título y el favicon de la página
+st.set_page_config(
+    page_title="Gamer's Companion",
+    page_icon="https://i.imgur.com/HaQOhdz.png",
+)
+
+# Título de la aplicación
+url_title = "https://i.imgur.com/WPJInDQ.png"
+st.markdown(f'<img src="{url_title}" alt="Encabezado" style="width: 100%;">',
+            unsafe_allow_html=True)
+
 # Realizar la conexión a google sheets
 scope = ["https://spreadsheets.google.com/feeds",
          "https://www.googleapis.com/auth/spreadsheets",
@@ -25,8 +36,12 @@ client = gspread.authorize(creds)
 # Abrir la hoja de Google Sheets
 hoja = client.open("Usuarios_bd").sheet1
 
+# Obtener el número de usuarios actual
+num_usuarios = len(hoja.get_all_records())
+
 # Página de streamlit
 st.title("Formulario de Registro")
+
 
 # Establecer un mínimo para la fecha
 MIN_FECHA_NAC = datetime(1940, 1, 1)
@@ -68,8 +83,10 @@ if st.button("Registrar"):
         usuario_existente = True
         st.error("El usuario ya se encuentra registrado.")
     else:
+
         if value:
             # Crear un diccionario con los datos del usuario
+            usuario_id = num_usuarios + 1
             usuario = {
                 "Nombre": nombre,
                 "Apellido": apellido,
@@ -77,15 +94,20 @@ if st.button("Registrar"):
                 "Género": genero,
                 "Género de videojuego preferido": videojuego_preferido,
                 "Correo": correo,
-                "Contraseña": contrasena
+                "Contraseña": contrasena,
+                "ID_Usuario": usuario_id
+
             }
 
             # Añadir una fila a la hoja de Google Sheets y registrar al usuario
             nueva_fila = [usuario["Nombre"], usuario["Apellido"], usuario["Fecha de Nacimiento"],
-                        usuario["Género"], usuario["Género de videojuego preferido"],
-                        usuario["Correo"], usuario["Contraseña"]]
+                            usuario["Género"], usuario["Género de videojuego preferido"],
+                            usuario["Correo"], usuario["Contraseña"], usuario["ID_Usuario"]]
             hoja.append_row(nueva_fila)
             st.success("¡Registro exitoso!")
+
             value = False
         else:
             st.error("No has aceptado la politica de tratamiendo de datos")
+       
+
