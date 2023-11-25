@@ -65,10 +65,6 @@ def borrar_comentario(indice):
 # Crea una barra de búsqueda en Streamlit
 game_name = st.text_input('Busca un videojuego')
 
-
-# Crea una barra de búsqueda en Streamlit
-game_name = st.text_input(' ')
-
 # Si se introduce un nombre de juego, busca la información del juego
 if game_name:
     game_info = get_game_info(game_name)
