@@ -68,4 +68,3 @@ if user_id is not None:
 
 else:
     st.write("Inicia sesión para ver recomendaciones.")
-
