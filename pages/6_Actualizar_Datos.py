@@ -77,6 +77,8 @@ if st.session_state['logged_in']:
             hoja.update_cell(numero_fila, 7, contrasena)
 
         st.success("Se han actualizado tus datos correctamente!")
+        st.succes("Porfavor vuelve a iniciar sesión")
+        st.session_state['logged_in'] = False
 
 else:
     st.warning("Para actualizar tus datos debes iniciar sesión")
