@@ -42,41 +42,44 @@ def obtenerNumeroFila(data):
             return index
         else:
             index +=1  
+if st.session_state['logged_in']:
+    # Datos personales
+    nombre = st.text_input("Nombre")
+    apellido = st.text_input("Apellido")
+    genero = st.selectbox("Género", ["Femenino", "Masculino",
+                                    "Prefiero no decirlo"])
+    videojuego_preferido = st.selectbox("Género de Videojuego Preferido",
+                                        ["Estrategia", "Acción", "Sci-fi",
+                                        "Misterio", "Horror", "Aventura"])
 
-# Datos personales
-nombre = st.text_input("Nombre")
-apellido = st.text_input("Apellido")
-genero = st.selectbox("Género", ["Femenino", "Masculino",
-                                  "Prefiero no decirlo"])
-videojuego_preferido = st.selectbox("Género de Videojuego Preferido",
-                                     ["Estrategia", "Acción", "Sci-fi",
-                                       "Misterio", "Horror", "Aventura"])
+    # Datos de acceso
+    contrasena = st.text_input("Contraseña", type="password")
 
-# Datos de acceso
-contrasena = st.text_input("Contraseña", type="password")
-
-# Se crea botón para actualizar
-if st.button("Actualizar datos"):
-    
-    # Se obtiene número de fila
-    numero_fila = obtenerNumeroFila(st.session_state.correo)
-    
-    # Se verifica si las casillas están vacías
-    if nombre != "":
-       hoja.update_cell(numero_fila,1, nombre)
-    
-    if apellido != "":
-        hoja.update_cell(numero_fila,2,apellido)
-    
-    hoja.update_cell(numero_fila, 4, genero)
-
-    hoja.update_cell(numero_fila, 5, videojuego_preferido)
-
-    if contrasena != "":
+    # Se crea botón para actualizar
+    if st.button("Actualizar datos"):
         
-        hoja.update_cell(numero_fila, 7, contrasena)
+        # Se obtiene número de fila
+        numero_fila = obtenerNumeroFila(st.session_state.correo)
+        
+        # Se verifica si las casillas están vacías
+        if nombre != "":
+            hoja.update_cell(numero_fila,1, nombre)
+        
+        if apellido != "":
+            hoja.update_cell(numero_fila,2,apellido)
+        
+        hoja.update_cell(numero_fila, 4, genero)
 
-    st.success("Se han actualizado tus datos correctamente!")
-    
+        hoja.update_cell(numero_fila, 5, videojuego_preferido)
+
+        if contrasena != "":
+            
+            hoja.update_cell(numero_fila, 7, contrasena)
+
+        st.success("Se han actualizado tus datos correctamente!")
+
+else:
+    st.warning("Para actualizar tus datos debes iniciar sesión")
+        
    
         
