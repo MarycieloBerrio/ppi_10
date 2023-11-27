@@ -64,7 +64,7 @@ contrasena = st.text_input("Contraseña", type="password")
 usuario_existente = False
 
 modal = Modal("Politica de tratamiento de datos", key="PTD")
-
+modal.max_width = 500
 if st.button("Politica de tratamiento de datos"):
    
     modal.open()
