@@ -1,6 +1,5 @@
 # Importar las liberías requeridas
 import streamlit as st
-import pandas as pd
 import requests
 from streamlit import session_state
 import gspread
@@ -18,6 +17,44 @@ client = gspread.authorize(creds)
 # Abrir la hoja de Google Sheets
 hoja = client.open("Usuarios_bd").get_worksheet(1)
 # Abrir la hoja de Google Sheets
+
+
+
+def update_rating_sheet(user_id, game_id, new_rating):
+    """
+    Actualiza la hoja de calificaciones de usuarios para un
+    juego específico con la nueva calificación.
+
+    Parameters:
+    - user_id (int): El ID del usuario que realiza la calificación.
+    - game_id (int): El ID del juego que se está calificando.
+    - new_rating (int): La nueva calificación asignada al juego por el usuario.
+
+    Returns:
+    None
+    """
+    # Abrir la hoja de Usuarios_rating
+    sheet = client.open("Usuarios_bd").worksheet("Usuarios_rating")
+    
+    # Encontrar la posición del usuario y el juego en la hoja
+    user_row = None
+    game_column = None
+
+    # Encontrar la posición del usuario en la primera columna
+    user_cells = sheet.col_values(1)
+    if str(user_id) in user_cells:
+        user_row = user_cells.index(str(user_id)) + 1
+    
+    # Encontrar la posición del juego en la primera fila
+    game_cells = sheet.row_values(1)
+    if str(game_id) in game_cells:
+        game_column = game_cells.index(str(game_id)) + 1
+
+    # Verificar si se encontró el usuario y el juego
+    if user_row is not None and game_column is not None:
+        sheet.update_cell(user_row, game_column, new_rating)
+    else:
+        print("Usuario o juego no encontrado en la hoja de cálculo")
 
 
 # Configura el título y el favicon de la página
@@ -102,29 +139,31 @@ if game_name:
         # Se verifica si el usuario está logeado para que aparezca
         # la funcionalidad de calificar el juego
         if st.session_state['logged_in']:
-             borrar = False
-             new_rating = st.selectbox("Calificar este juego:", options=[0, 1, 2, 3, 4, 5])
-             st.write(f"Has calificado {game_info[0]['name']} con {new_rating} ★")
+            borrar = False
+            new_rating = st.selectbox("Calificar este juego:", options=[0, 1, 2, 3, 4, 5])
+            if st.button("Guardar calificación"):
+                user_id = st.session_state['id']  # Obtener el ID del usuario actual
+                game_id = game_info[0]['id']  # Obtener el ID del juego actual
+                update_rating_sheet(user_id, game_id, new_rating)  # Actualizar la hoja de calificaciones
+                st.write(f"Has calificado {game_info[0]['name']} con {new_rating} ★")
 
             
-             correos = hoja.col_values(2)
-             juegos = hoja.col_values(3)
+            correos = hoja.col_values(2)
+            juegos = hoja.col_values(3)
             
-             comentado = False
-             for i in range(1,len(correos)):
+            comentado = False
+            for i in range(1,len(correos)):
                 if correos[i] == st.session_state.correo and juegos[i] == game_name:
                     comentado = True
             
-             if comentado == False:
+            if comentado == False:
                 # Crear el text area para los comentarios
                 text_area = st.text_area("Comentario:", max_chars=100)
                 if st.button("Enviar"):
                     nueva_fila = [text_area, st.session_state.nombre, game_name]
                     hoja.append_row(nueva_fila)
-                    st.success("¡Comentario realizado!")
-               
-                    
-             else:
+                    st.success("¡Comentario realizado!")      
+            else:
                 st.write("Ya has escrito un comentario en este juego")
                 st.write("Borralo, para poder escribir otro")
                 if st.button("Borrar comentario"):

@@ -1,5 +1,4 @@
 import streamlit as st
-import requests
 from streamlit import session_state
 import gspread
 import pandas as pd
