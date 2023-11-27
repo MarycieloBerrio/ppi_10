@@ -62,10 +62,16 @@ def get_game_info(game_name):
 def borrar_comentario(indice):
     hoja.delete_row(indice)
 
+<<<<<<< HEAD
 # Imagen del encabezadoo
 url_title = "https://i.imgur.com/xqohjCG.png"
 st.markdown(f'<img src="{url_title}" alt="Encabezado" style="width: 100%;">',
             unsafe_allow_html=True)
+=======
+
+# Crea una barra de búsqueda en Streamlit
+game_name = st.text_input('Busca un videojuego')
+>>>>>>> fc37b2fb00f7bbabc196d91e19d5bfff4d2eab09
 
 # Si se introduce un nombre de juego, busca la información del juego
 if game_name:
