@@ -34,7 +34,7 @@ with col2:
 st.image(url_title)
 
 # Cargar los datos desde el archivo CSV
-df = pd.read_csv("Base_datos\juegos.csv")
+df = pd.read_csv("Base_datos/juegos.csv")
 
 # Comprobar si estamos en la página principal o de detalles
 page = st.experimental_get_query_params().get('page', ['main'])[0]
