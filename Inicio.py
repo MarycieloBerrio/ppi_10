@@ -5,7 +5,7 @@ mostrar al usuario la aplicación
 """
 
 import json
-import pandas as pd
+import requests
 import streamlit as st
 from streamlit_image_select import image_select
 
@@ -34,89 +34,108 @@ with col2:
 # Añade la imagen como encabezado de la aplicación de Streamlit
 st.image(url_title)
 
-# Cargar los datos desde el archivo CSV
-df = pd.read_csv("Base_datos/juegos.csv")
+# URL y credenciales para la API de IGDB
+URL = "https://api.igdb.com/v4/games"
+HEADERS = {
+    'Client-ID': 'ju1vfy05jqstzoclqv1cs2hsomw1au',
+    'Authorization': 'Bearer nw5q3ov9xfk9o0vsv1vqicx4xbvjbb',
+}
 
-# Comprobar si estamos en la página principal o de detalles
-page = st.experimental_get_query_params().get('page', ['main'])[0]
+# Parámetros de la consulta a la API de IGDB
+BODY = 'fields id,name,cover.url; limit 100; sort rating desc;\
+        where rating > 70; where rating_count > 1000;'
 
-if page == 'main':
+response = requests.post(URL, headers=HEADERS, data=BODY)
 
-    # Convertir cadenas JSON en diccionarios
-    df['cover'] = df['cover'].apply(lambda x: json.loads(x.replace("'", '"'))
-                                    if pd.notnull(x) else None)
+# Comprueba si la solicitud fue exitosa
+if response.status_code == 200:
+    # Convierte la respuesta en JSON
+    games = json.loads(response.text)
 
-    # Mostrar las imágenes como imágenes clicables
-    clicked_index = image_select(
-        label=" ",
-        images=df['cover'].apply(lambda x: x['url'] if x and 'url' in x else None).tolist(),
-        captions=df['name'].tolist(),
-        return_value="index",
-        use_container_width=False
-    )
+    # Contador para llevar un registro de cuántos juegos se han mostrado
+    count = 0
 
-    st.write(clicked_index)
-
-    # Redirigir a la página de detalles del juego
-    if clicked_index:
+    query_params = st.experimental_get_query_params().keys()
+    if 'page' not in query_params:
         st.experimental_set_query_params(
-            page='details', game_id=str(df.iloc[clicked_index]['id'])
+            page='main'
         )
 
-elif page == 'details':
-    # Obtener el ID del juego desde la URL
-    game_id = st.experimental_get_query_params().get('game_id', ['0'])[0]
+    if st.experimental_get_query_params()['page'][0] == 'main':
+        image_urls = []
+        game_ids = []
+        game_names = []  # Lista para almacenar los nombres de los juegos
+        for i, game in enumerate(games):
+            if 'cover' in game and count < 50:
+                image_url = game['cover']['url'].replace('t_thumb', 't_cover_big')
+                image_url = 'https:' + image_url
 
-    # Buscar el juego por ID en el DataFrame
-    game_info = df[df['id'] == int(game_id)]
+                # Incrementa el contador
+                count += 1
 
-    if not game_info.empty:
-        game_info = game_info.iloc[0]
+                # Añade los datos del juego a las listas
+                image_urls.append(image_url)
+                game_ids.append(game['id'])
+                game_names.append(game['name'])
 
-        # Extraer la URL de la imagen del juego
-        cover_info = game_info['cover']
-        if isinstance(cover_info, str):
-            # Si cover_info es una cadena, intentar cargarla como JSON
-            try:
-                cover_info = json.loads(cover_info.replace("'", '"'))
-            except json.JSONDecodeError:
-                # Si no se puede cargar como JSON, dejarla como una cadena
-                cover_info = {'url': cover_info}
+        # Muestra las imágenes como imágenes clicables
+        clicked_index = image_select(
+            label=" ",
+            images=image_urls,
+            # Usa los nombres de los juegos como subtítulos
+            captions=game_names,
+            return_value="index",
+            use_container_width=False
+        )
 
-        # Obtener la URL de la imagen del juego
-        cover_url = cover_info.get('url')
+        # Redirige a la página de detalles del juego
+        if clicked_index is not None:
+            st.experimental_set_query_params(
+                page='details', game_id=game_ids[clicked_index]
+                )
 
-        # Agregar https: al principio de la URL
-        if cover_url and not cover_url.startswith("https:"):
-            cover_url = "https:" + cover_url
+    elif st.experimental_get_query_params()['page'][0] == 'details':
+        game_id = st.experimental_get_query_params()['game_id'][0]
 
-        # Mostrar la información detallada del juego
-        st.title(game_info['name'])
+        # Define la consulta para buscar el juego por ID
+        body = f'fields name, summary, involved_companies.company.name,\
+                platforms.name, cover.url; where id = {game_id};'
 
-        col1, col2 = st.columns(2)
+        # Realiza la solicitud a la API
+        response = requests.post(URL, headers=HEADERS, data=body)
 
-        # Mostrar la imagen del juego
-        if cover_url is not None:
-            col1.image(cover_url, use_column_width=True)
+        # Obtiene los detalles del juego en formato JSON
+        game_info = response.json()
+
+        # Verifica si se obtuvo alguna información del juego
+        if game_info:
+            # Muestra el nombre del juego como título de la página
+            st.title(game_info[0]['name'])
+
+            # Crea dos columnas para mostrar la información del juego
+            col1, col2 = st.columns(2)
+
+            # Muestra la imagen del juego en la columna de la izquierda
+            if 'cover' in game_info[0] and 'url' in game_info[0]['cover']:
+                image_url = ('https://images.igdb.com/igdb/image/upload/t_cover_big/'
+                            + game_info[0]['cover']['url'].split('/')[-1])
+                col1.image(image_url, use_column_width=False)
+            else:
+                st.write("Imagen no disponible")
+
+            # Muestra la información del juego en la columna de la derecha
+            col2.markdown(f"**Sinopsis:** {game_info[0]['summary']}")
+            col2.markdown(f"**Desarrollador:** \
+                {game_info[0]['involved_companies'][0]['company']['name']}")
+            col2.markdown(f"**Plataformas:** \
+                {', '.join([platform['name'] for platform in game_info[0]['platforms']])}")
         else:
-            st.write("Imagen no disponible")
+            st.write("Lo siento, no pude encontrar ningún juego con ese ID.")
 
-        col2.markdown(f"**Sinopsis:** {game_info['summary']}")
-        col2.markdown(f"**Desarrollador:** {game_info['involved_companies']}")
         
-        # Redondear total_rating a dos decimales
-        rounded_rating = round(game_info['total_rating'], 2)
-        
-        # Mostrar el rating total con formato personalizado
-        col2.markdown(f"<h3 style='color: #6b0b9b;'>Calificación: {rounded_rating}</h3>", 
-                      unsafe_allow_html=True)
-
-    else:
-        st.write("Lo siento, no pude encontrar ningún juego con ese ID.")
-
-    # Mostrar un botón "Volver" que llama a la función 'volver' cuando se hace clic
-    if st.button('Volver', key='volver'):
-        st.experimental_set_query_params(page='main', game_id='0')
+        # Muestra un botón "Volver" que llama a la función 'volver' cuando se hace clic
+        if st.button('Volver', key='volver'):
+            st.experimental_set_query_params(page='main', game_id='0')
             
 # Información de los desarrolladores
 developers = [
