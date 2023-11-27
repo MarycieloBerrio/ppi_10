@@ -2,7 +2,6 @@
 import streamlit as st
 import pandas as pd
 import requests
-
 from streamlit import session_state
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
@@ -18,6 +17,8 @@ client = gspread.authorize(creds)
 
 # Abrir la hoja de Google Sheets
 hoja = client.open("Usuarios_bd").get_worksheet(1)
+# Abrir la hoja de Google Sheets
+
 
 # Configura el título y el favicon de la página
 st.set_page_config(
@@ -62,16 +63,13 @@ def get_game_info(game_name):
 def borrar_comentario(indice):
     hoja.delete_row(indice)
 
-<<<<<<< HEAD
 # Imagen del encabezadoo
 url_title = "https://i.imgur.com/xqohjCG.png"
 st.markdown(f'<img src="{url_title}" alt="Encabezado" style="width: 100%;">',
             unsafe_allow_html=True)
-=======
 
 # Crea una barra de búsqueda en Streamlit
 game_name = st.text_input('Busca un videojuego')
->>>>>>> fc37b2fb00f7bbabc196d91e19d5bfff4d2eab09
 
 # Si se introduce un nombre de juego, busca la información del juego
 if game_name:
@@ -121,7 +119,7 @@ if game_name:
                 # Crear el text area para los comentarios
                 text_area = st.text_area("Comentario:", max_chars=100)
                 if st.button("Enviar"):
-                    nueva_fila = [text_area, st.session_state.correo, game_name]
+                    nueva_fila = [text_area, st.session_state.nombre, game_name]
                     hoja.append_row(nueva_fila)
                     st.success("¡Comentario realizado!")
                
@@ -141,6 +139,10 @@ if game_name:
                             break
                         else:
                             indice += 1
+             data = hoja.get_all_values()
+             comentarios = pd.DataFrame(data[1:], columns=data[0])
+             comentarios_2 = comentarios[comentarios['Juego'] == game_name][['Comentario', 'Nombre']]
+             st.table(comentarios_2)
         
     else:
         st.write("Lo siento, no pude encontrar ningún juego con ese nombre.")
