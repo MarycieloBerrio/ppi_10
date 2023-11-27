@@ -10,6 +10,16 @@ from streamlit import session_state
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
+ # Configuración de autenticación y acceso a Google Sheets
+scope = [
+        "https://spreadsheets.google.com/feeds",
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive.file",
+        "https://www.googleapis.com/auth/drive.file"
+    ]
+creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
+cliente = gspread.authorize(creds)
+
 # Obtener el ID del usuario desde st.session_state
 user_id = st.session_state.get('id')
 
@@ -36,12 +46,25 @@ if user_id is not None:
         # Generar recomendaciones basadas en ese juego
         matriz_similitud = calcular_similitud_juegos(df)
         recomendaciones = encontrar_juegos_similares(matriz_similitud, random_game_id)
-    
-        # Mostrar las recomendaciones obtenidas
-        st.write(f"Recomendaciones basadas en el juego {random_game_id}: {recomendaciones}")
+
+        # Conectar con la hoja de Google Sheets que contiene la información de los juegos
+        info_juegos_sheet = cliente.open("Usuarios_bd").worksheet("Info_Juegos")
+
+        # Crear un DataFrame con los datos de la hoja Info_Juegos
+        info_juegos_df = pd.DataFrame(info_juegos_sheet.get_all_records())
+
+        # Filtrar los nombres de los juegos basados en los ID recomendados
+        nombres_recomendados = info_juegos_df[info_juegos_df['ID_JUEGO'].astype(str).isin(recomendaciones)]['Nombre_Juego']
+
+        if not nombres_recomendados.empty:
+            # Mostrar los nombres de los juegos recomendados
+            st.write("Juegos Recomendados:")
+            for nombre in nombres_recomendados:
+                st.write(nombre)
+        else:
+            st.write("No se encontraron juegos recomendados.")
     else:
         st.write("No hay juegos con calificaciones mayores a 3 en la base de datos.")
 
 else:
     st.write("Inicia sesión para ver recomendaciones.")
-
