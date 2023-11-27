@@ -1,4 +1,5 @@
 # Importar las liberías requeridas
+import pandas as pd
 import streamlit as st
 import requests
 from streamlit import session_state
@@ -178,10 +179,10 @@ if game_name:
                             break
                         else:
                             indice += 1
-             data = hoja.get_all_values()
-             comentarios = pd.DataFrame(data[1:], columns=data[0])
-             comentarios_2 = comentarios[comentarios['Juego'] == game_name][['Comentario', 'Nombre']]
-             st.table(comentarios_2)
+            data = hoja.get_all_values()
+            comentarios = pd.DataFrame(data[1:], columns=data[0])
+            comentarios_2 = comentarios[comentarios['Juego'] == game_name][['Comentario', 'Nombre']]
+            st.table(comentarios_2)
         
     else:
         st.write("Lo siento, no pude encontrar ningún juego con ese nombre.")
