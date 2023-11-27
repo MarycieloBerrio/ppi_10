@@ -17,6 +17,17 @@ st.set_page_config(
     page_icon="https://i.imgur.com/HaQOhdz.png",
 )
 
+ # Configuración de autenticación y acceso a Google Sheets
+scope = [
+        "https://spreadsheets.google.com/feeds",
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive.file",
+        "https://www.googleapis.com/auth/drive.file"
+    ]
+creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
+cliente = gspread.authorize(creds)
+hoja = cliente.open("Usuarios_bd").sheet1
+
 # Título de la aplicación
 url_title = "https://i.imgur.com/gf0JGeU.png"
 st.markdown(f'<img src="{url_title}" alt="Encabezado" style="width: 100%;">',
@@ -26,7 +37,7 @@ st.markdown(f'<img src="{url_title}" alt="Encabezado" style="width: 100%;">',
 correo = st.text_input("Correo")
 contrasena = st.text_input("Contraseña", type="password")
 
-def obtener_nombre_usuario(user_correo):
+def obtener_nombre_usuario(user_correo,data):
     """
     Obtiene el nombre de usuario correspondiente a un correo específico desde una hoja de Google Sheets.
 
@@ -36,17 +47,6 @@ def obtener_nombre_usuario(user_correo):
     Retorna:
     - str: El nombre del usuario si se encuentra, o None si el correo no se encuentra en la hoja.
     """
-
-    # Configuración de autenticación y acceso a Google Sheets
-    scope = [
-        "https://spreadsheets.google.com/feeds",
-        "https://www.googleapis.com/auth/spreadsheets",
-        "https://www.googleapis.com/auth/drive.file",
-        "https://www.googleapis.com/auth/drive.file"
-    ]
-    creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
-    cliente = gspread.authorize(creds)
-    hoja = cliente.open("Usuarios_bd").sheet1
 
     # Obtiene todos los datos de la hoja
     data = hoja.get_all_values()
@@ -62,7 +62,7 @@ def obtener_nombre_usuario(user_correo):
     return None  # Si no se encuentra el correo en la hoja
 
 
-def obtener_apellido_usuario(user_correo):
+def obtener_apellido_usuario(user_correo,data):
     """
     Obtiene el apellido de usuario correspondiente a un correo 
     específico desde una hoja de Google Sheets.
@@ -74,18 +74,7 @@ def obtener_apellido_usuario(user_correo):
     - str: El apellido del usuario si se encuentra, o None si el correo no se 
     encuentra en la hoja.
     """
-
-    # Configuración de autenticación y acceso a Google Sheets
-    scope = [
-        "https://spreadsheets.google.com/feeds",
-        "https://www.googleapis.com/auth/spreadsheets",
-        "https://www.googleapis.com/auth/drive.file",
-        "https://www.googleapis.com/auth/drive.file"
-    ]
-    creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
-    cliente = gspread.authorize(creds)
-    hoja = cliente.open("Usuarios_bd").sheet1
-
+   
     # Obtiene todos los datos de la hoja
     data = hoja.get_all_values()
 
@@ -96,7 +85,7 @@ def obtener_apellido_usuario(user_correo):
 
     return None  # Si no se encuentra el correo en la hoja
 
-def obtener_genero_usuario(user_correo):
+def obtener_genero_usuario(user_correo, data):
     """
     Obtiene el genero favorito de usuario correspondiente a un correo 
     específico desde una hoja de Google Sheets.
@@ -109,16 +98,6 @@ def obtener_genero_usuario(user_correo):
       no se encuentra en la hoja.
     """
 
-    # Configuración de autenticación y acceso a Google Sheets
-    scope = [
-        "https://spreadsheets.google.com/feeds",
-        "https://www.googleapis.com/auth/spreadsheets",
-        "https://www.googleapis.com/auth/drive.file",
-        "https://www.googleapis.com/auth/drive.file"
-    ]
-    creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
-    cliente = gspread.authorize(creds)
-    hoja = cliente.open("Usuarios_bd").sheet1
 
     # Obtiene todos los datos de la hoja
     data = hoja.get_all_values()
@@ -130,7 +109,7 @@ def obtener_genero_usuario(user_correo):
 
     return None  # Si no se encuentra el correo en la hoja
 
-def obtener_fecha_usuario(user_correo):
+def obtener_fecha_usuario(user_correo, data):
     """
     Obtiene la fecha de nacimiento de usuario correspondiente a un correo 
     específico desde una hoja de Google Sheets.
@@ -143,17 +122,6 @@ def obtener_fecha_usuario(user_correo):
     correo no se encuentra en la hoja.
     """
 
-    # Configuración de autenticación y acceso a Google Sheets
-    scope = [
-        "https://spreadsheets.google.com/feeds",
-        "https://www.googleapis.com/auth/spreadsheets",
-        "https://www.googleapis.com/auth/drive.file",
-        "https://www.googleapis.com/auth/drive.file"
-    ]
-    creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
-    cliente = gspread.authorize(creds)
-    hoja = cliente.open("Usuarios_bd").sheet1
-
     # Obtiene todos los datos de la hoja
     data = hoja.get_all_values()
 
@@ -164,7 +132,7 @@ def obtener_fecha_usuario(user_correo):
 
     return None  # Si no se encuentra el correo en la hoja
 
-def obtener_sexo_usuario(user_correo):
+def obtener_sexo_usuario(user_correo, data):
     """
     Obtiene el sexo del usuario correspondiente a un correo específico 
     desde una hoja de Google Sheets.
@@ -177,16 +145,6 @@ def obtener_sexo_usuario(user_correo):
     encuentra en la hoja.
     """
 
-    # Configuración de autenticación y acceso a Google Sheets
-    scope = [
-        "https://spreadsheets.google.com/feeds",
-        "https://www.googleapis.com/auth/spreadsheets",
-        "https://www.googleapis.com/auth/drive.file",
-        "https://www.googleapis.com/auth/drive.file"
-    ]
-    creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
-    cliente = gspread.authorize(creds)
-    hoja = cliente.open("Usuarios_bd").sheet1
 
     # Obtiene todos los datos de la hoja
     data = hoja.get_all_values()
@@ -199,7 +157,7 @@ def obtener_sexo_usuario(user_correo):
     return None  # Si no se encuentra el correo en la hoja
 
 
-def obtener_id_usuario(user_correo):
+def obtener_id_usuario(user_correo, data):
     """
     Obtiene el ID de usuario correspondiente a un correo específico desde una hoja de Google Sheets.
 
@@ -209,17 +167,6 @@ def obtener_id_usuario(user_correo):
     Retorna:
     - int: El ID del usuario si se encuentra, o None si el correo no se encuentra en la hoja.
     """
-
-    # Configuración de autenticación y acceso a Google Sheets
-    scope = [
-        "https://spreadsheets.google.com/feeds",
-        "https://www.googleapis.com/auth/spreadsheets",
-        "https://www.googleapis.com/auth/drive.file",
-        "https://www.googleapis.com/auth/drive.file"
-    ]
-    creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
-    cliente = gspread.authorize(creds)
-    hoja = cliente.open("Usuarios_bd").sheet1
 
     # Obtiene todos los datos de la hoja
     data = hoja.get_all_values()
@@ -233,7 +180,7 @@ def obtener_id_usuario(user_correo):
 
 
 
-def validar_credenciales(user_correo, user_contrasena):
+def validar_credenciales(user_correo, user_contrasena, data):
     """
     Valida las credenciales de un usuario en una hoja de Google Sheets.
 
@@ -244,17 +191,6 @@ def validar_credenciales(user_correo, user_contrasena):
     Retorna:
     - bool: True si las credenciales son válidas, False en caso contrario.
     """
-
-    # Configuración de autenticación y acceso a Google Sheets
-    scope = [
-        "https://spreadsheets.google.com/feeds",
-        "https://www.googleapis.com/auth/spreadsheets",
-        "https://www.googleapis.com/auth/drive.file",
-        "https://www.googleapis.com/auth/drive.file"
-    ]
-    creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
-    cliente = gspread.authorize(creds)
-    hoja = cliente.open("Usuarios_bd").sheet1
 
     # Obtiene todos los datos de la hoja
     data = hoja.get_all_values()
@@ -270,22 +206,22 @@ def validar_credenciales(user_correo, user_contrasena):
 if st.button("Iniciar sesión"):
    
    # Se llama la función para validar las credenciales ingresadas
-    if validar_credenciales(correo, contrasena):
+    if validar_credenciales(correo, contrasena, hoja):
         st.success("Inicio de sesión exitoso")
         
         # Se crean las variables de sesión de estado para el usuario
         st.session_state['correo'] = correo
         st.session_state['logged_in']  = True
-        st.session_state.nombre = obtener_nombre_usuario(correo)
-        st.session_state.apellido = obtener_apellido_usuario(correo)
-        st.session_state.generofav = obtener_genero_usuario(correo)
-        st.session_state.sexo = obtener_sexo_usuario(correo)
-        st.session_state.fecha = obtener_fecha_usuario(correo)
-        st.session_state.id = obtener_id_usuario(correo)
+        st.session_state.nombre = obtener_nombre_usuario(correo, hoja)
+        st.session_state.apellido = obtener_apellido_usuario(correo, hoja)
+        st.session_state.generofav = obtener_genero_usuario(correo, hoja)
+        st.session_state.sexo = obtener_sexo_usuario(correo, hoja)
+        st.session_state.fecha = obtener_fecha_usuario(correo, hoja)
+        st.session_state.id = obtener_id_usuario(correo, hoja)
         
         # Se obtiene el nombre de usuario para saludarlo
         if st.session_state['logged_in']:
-            nombre_usuario = obtener_nombre_usuario(correo)
+            nombre_usuario = st.session_state.nombre
             if nombre_usuario:
                 st.write(f"Bienvenido, {nombre_usuario}")
             else:
