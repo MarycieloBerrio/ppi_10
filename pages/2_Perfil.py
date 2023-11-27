@@ -23,11 +23,7 @@ if st.session_state['logged_in']:
         st.write(f"Género: {st.session_state.sexo}")
         st.write(f"Género Favorito: {st.session_state.generofav}")
         st.write(f"Correo Electrónico: {st.session_state.correo}")
-        st.subheader("Juegos Calificados")
-        st.write("0")  
-        st.subheader("Juegos Finalizados")
-        st.write("0")  
-        st.write(f'Estado {st.session_state.logged_in}')
+        
 
 else:
     st.warning("Para ver tu perfil debes iniciar sesión")
