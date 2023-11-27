@@ -109,4 +109,4 @@ if st.button("Registrar"):
             value = False
         else:
             st.error("No has aceptado la politica de tratamiendo de datos")
-       
+

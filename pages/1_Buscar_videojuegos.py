@@ -1,6 +1,61 @@
+# Importar las liberías requeridas
 import streamlit as st
-import pandas as pd
 import requests
+from streamlit import session_state
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
+
+# Realizar la conexión a google sheets
+scope = ["https://spreadsheets.google.com/feeds",
+         "https://www.googleapis.com/auth/spreadsheets",
+         "https://www.googleapis.com/auth/drive.file",
+         "https://www.googleapis.com/auth/drive.file"]
+
+creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
+client = gspread.authorize(creds)
+
+# Abrir la hoja de Google Sheets
+hoja = client.open("Usuarios_bd").get_worksheet(1)
+# Abrir la hoja de Google Sheets
+
+
+
+def update_rating_sheet(user_id, game_id, new_rating):
+    """
+    Actualiza la hoja de calificaciones de usuarios para un
+    juego específico con la nueva calificación.
+
+    Parameters:
+    - user_id (int): El ID del usuario que realiza la calificación.
+    - game_id (int): El ID del juego que se está calificando.
+    - new_rating (int): La nueva calificación asignada al juego por el usuario.
+
+    Returns:
+    None
+    """
+    # Abrir la hoja de Usuarios_rating
+    sheet = client.open("Usuarios_bd").worksheet("Usuarios_rating")
+    
+    # Encontrar la posición del usuario y el juego en la hoja
+    user_row = None
+    game_column = None
+
+    # Encontrar la posición del usuario en la primera columna
+    user_cells = sheet.col_values(1)
+    if str(user_id) in user_cells:
+        user_row = user_cells.index(str(user_id)) + 1
+    
+    # Encontrar la posición del juego en la primera fila
+    game_cells = sheet.row_values(1)
+    if str(game_id) in game_cells:
+        game_column = game_cells.index(str(game_id)) + 1
+
+    # Verificar si se encontró el usuario y el juego
+    if user_row is not None and game_column is not None:
+        sheet.update_cell(user_row, game_column, new_rating)
+    else:
+        print("Usuario o juego no encontrado en la hoja de cálculo")
+
 
 # Configura el título y el favicon de la página
 st.set_page_config(
@@ -41,10 +96,17 @@ def get_game_info(game_name):
     # Devuelve los datos del juego
     return response.json()
 
-# Titulo de la pagina
+
+def borrar_comentario(indice):
+    hoja.delete_row(indice)
+
+# Imagen del encabezadoo
 url_title = "https://i.imgur.com/xqohjCG.png"
 st.markdown(f'<img src="{url_title}" alt="Encabezado" style="width: 100%;">',
             unsafe_allow_html=True)
+
+# Crea una barra de búsqueda en Streamlit
+game_name = st.text_input('Busca un videojuego')
 
 # Si se introduce un nombre de juego, busca la información del juego
 if game_name:
@@ -64,7 +126,7 @@ if game_name:
         if 'cover' in game_info[0] and 'url' in game_info[0]['cover']:
             image_url = ('https://images.igdb.com/igdb/image/upload/t_cover_big/'
                          + game_info[0]['cover']['url'].split('/')[-1])
-            col1.image(image_url, use_column_width=False)
+            col1.image(image_url, use_column_width=True)
         else:
             st.write("Imagen no disponible")
 
@@ -77,10 +139,49 @@ if game_name:
         # Se verifica si el usuario está logeado para que aparezca
         # la funcionalidad de calificar el juego
         if st.session_state['logged_in']:
+            borrar = False
             new_rating = st.selectbox("Calificar este juego:", options=[0, 1, 2, 3, 4, 5])
-            st.write(f"Has calificado {game_info[0]['name']} con {new_rating} ★")
+            if st.button("Guardar calificación"):
+                user_id = st.session_state['id']  # Obtener el ID del usuario actual
+                game_id = game_info[0]['id']  # Obtener el ID del juego actual
+                update_rating_sheet(user_id, game_id, new_rating)  # Actualizar la hoja de calificaciones
+                st.write(f"Has calificado {game_info[0]['name']} con {new_rating} ★")
+
+            
+            correos = hoja.col_values(2)
+            juegos = hoja.col_values(3)
+            
+            comentado = False
+            for i in range(1,len(correos)):
+                if correos[i] == st.session_state.correo and juegos[i] == game_name:
+                    comentado = True
+            
+            if comentado == False:
+                # Crear el text area para los comentarios
+                text_area = st.text_area("Comentario:", max_chars=100)
+                if st.button("Enviar"):
+                    nueva_fila = [text_area, st.session_state.nombre, game_name]
+                    hoja.append_row(nueva_fila)
+                    st.success("¡Comentario realizado!")      
+            else:
+                st.write("Ya has escrito un comentario en este juego")
+                st.write("Borralo, para poder escribir otro")
+                if st.button("Borrar comentario"):
+                    indice = 2
+                    correos = hoja.col_values(2)  # Supongamos que los correos están en la columna A
+                    juegos = hoja.col_values(3)  # Supongamos que los juegos están en la columna B
+                        
+                    for i in range(1, len(correos)):
+                        if correos[i] == st.session_state.correo and juegos[i] == game_name:  
+                            borrar_comentario(indice)
+                            st.success("Has borrado tu comentario")
+                            break
+                        else:
+                            indice += 1
+             data = hoja.get_all_values()
+             comentarios = pd.DataFrame(data[1:], columns=data[0])
+             comentarios_2 = comentarios[comentarios['Juego'] == game_name][['Comentario', 'Nombre']]
+             st.table(comentarios_2)
         
     else:
         st.write("Lo siento, no pude encontrar ningún juego con ese nombre.")
-
-    
