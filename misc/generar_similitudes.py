@@ -42,84 +42,101 @@ def cargar_datos_google_sheets():
     sheet = client.open("Usuarios_bd").worksheet("Usuarios_rating")
     data = sheet.get_all_records()
 
-    df = pd.DataFrame(data)
+    # Asumiendo que la primera fila contiene los encabezados y la primera columna contiene IDs de usuario
+    headers = data[0]
+    data = data[1:]  # Quitamos la primera fila con encabezados
+    df = pd.DataFrame(data, columns=headers)
+
+    # Identificar la columna de ID de usuario correctamente
+    df.set_index(df.columns[0], inplace=True)  # Suponiendo que la primera columna es el ID de usuario
+    df.index.name = None  # Eliminamos el nombre del índice
+
+    # Eliminar fila y columna duplicadas si existen
+    df = df.loc[:, ~df.columns.duplicated()]
+    df = df.loc[~df.index.duplicated(keep='first')]
+
+    # Convertir los valores a números si es necesario
+    df = df.apply(pd.to_numeric)
+    # Convertir los valores de los índices en enteros
+    df.index = df.index.astype(int)
+
     return df
 
-def calcular_similitud_usuarios(df, user_id):
+
+def calcular_similitud_juegos(df):
     """
-    Calcula la similitud entre el usuario dado (user_id)
-    y otros usuarios en el DataFrame.
+    Calcula la matriz de similitud entre juegos.
 
     Args:
-    df (pd.DataFrame): DataFrame que contiene los datos de los usuarios
-                       y sus ratings.
-    user_id (int): El ID del usuario para el cual se calculará la similitud.
+    df (pd.DataFrame): DataFrame con los datos de juegos y sus votaciones.
 
     Returns:
-    list: Lista de IDs de los 10 usuarios más
-          similares al usuario dado (user_id).
+    pd.DataFrame: Matriz de similitud entre los juegos.
     """
-    # Filtra las filas del DataFrame donde el
-    # ID_USUARIO es igual al ID proporcionado
-    user_ratings = df[df['ID_USUARIO'] == user_id].iloc[:, 1:].values
+    # Duplicar el DataFrame original excluyendo la primera fila y la primera columna
+    df_copy = df.iloc[1:, 1:].copy()
 
-    # Filtra las filas del DataFrame donde el
-    # ID_USUARIO no es igual al ID proporcionado
-    all_user_ratings = df[df['ID_USUARIO'] != user_id].iloc[:, 1:].values
+    # Convertir los valores a números si es necesario
+    df_copy = df_copy.apply(pd.to_numeric)
 
-    # Inicializa una lista para almacenar las puntuaciones de similitud
-    similarity_scores = []
+    # Calcular la matriz de similitud del coseno manualmente
+    num_juegos = df_copy.shape[1]
+    similarity_matrix = np.zeros((num_juegos, num_juegos))
 
-    # Calcula la similitud del coseno entre el usuario dado y otros usuarios
-    for other_user_ratings in all_user_ratings:
-        # Calcula la similitud del coseno entre las puntuaciones
-        # del usuario y otros usuarios
-        score = 1 - cosine(user_ratings, other_user_ratings)
-        similarity_scores.append(score)
+    for i in range(num_juegos):
+        for j in range(num_juegos):
+            similarity_matrix[i, j] = 1 - cosine(df_copy.iloc[:, i], df_copy.iloc[:, j])
 
-    # Obtiene los índices de los usuarios más
-    #  similares al usuario dado (user_id)
-    top_similar_users_indices = np.argsort(similarity_scores)[-10:][::-1]
-    return list(df[df['ID_USUARIO'] != user_id].\
-           iloc[top_similar_users_indices]['ID_USUARIO'])
+    # Almacenar los valores de similitud en la copia del DataFrame
+    df_similarities = pd.DataFrame(similarity_matrix, index=df_copy.columns, columns=df_copy.columns)
+    
+    return df_similarities
 
-def calcular_similitud_juegos(df, user_id):
+
+def calcular_similitud_usuarios(df):
     """
-    Calcula los juegos más similares a las preferencias de un
-    usuario en función de la similitud del coseno.
+    Calcula la matriz de similitud entre usuarios.
 
     Args:
-    df (pd.DataFrame): DataFrame que contiene los datos de calificaciones
-                       de los usuarios por juego.
-    user_id (int): ID del usuario para el cual se buscan juegos similares.
+    df (pd.DataFrame): DataFrame con los datos de usuarios y sus votaciones.
 
     Returns:
-    list: Lista de los nombres de los 10 juegos más similares a las
-          preferencias del usuario dado.
+    pd.DataFrame: Matriz de similitud entre los usuarios.
     """
-    # Extrae las puntuaciones de un usuario en particular
-    user_ratings = df[df['ID_USUARIO'] == user_id].iloc[:, 1:].values[0]
+    # Duplicar el DataFrame original excluyendo la primera fila y la primera columna
+    df_copy = df.iloc[1:, 1:].copy()
 
-    # Obtiene todas las puntuaciones de los juegos para todos los usuarios,
-    # excluyendo la columna de ID_USUARIO
-    all_game_ratings = df.drop(columns=['ID_USUARIO']).values
+    # Convertir los valores a números si es necesario
+    df_copy = df_copy.apply(pd.to_numeric)
 
-    # Inicializa una lista para almacenar las puntuaciones de similitud
-    similarity_scores = []
+    # Calcular la matriz de similitud del coseno manualmente (entre usuarios)
+    num_usuarios = df_copy.shape[0]
+    similarity_matrix = np.zeros((num_usuarios, num_usuarios))
 
-    # Calcula la similitud del coseno entre las puntuaciones de un usuario y
-    #  todas las puntuaciones de juegos
-    for game_ratings in all_game_ratings:
-        # Calcula la similitud del coseno entre las puntuaciones del usuario
-        #  y las puntuaciones de cada juego
-        score = 1 - cosine(user_ratings, game_ratings)
-        similarity_scores.append(score)
+    for i in range(num_usuarios):
+        for j in range(num_usuarios):
+            similarity_matrix[i, j] = 1 - cosine(df_copy.iloc[i, :], df_copy.iloc[j, :])
 
-    # Obtiene los índices de los juegos más similares a
-    # las preferencias del usuario dado (user_id)
-    top_similar_games_indices = np.argsort(similarity_scores)[-10:][::-1]
+    # Almacenar los valores de similitud en la copia del DataFrame
+    df_similarities = pd.DataFrame(similarity_matrix, index=df_copy.index, columns=df_copy.index)
+    
+    return df_similarities
 
-    # Obtiene los nombres de los juegos más similares
-    # a las preferencias del usuario
-    return list(df.drop(columns=['ID_USUARIO']).\
-                columns[top_similar_games_indices])
+
+def encontrar_juegos_similares(matriz_similitud, id_juego):
+    """
+    Encuentra los juegos más similares a un juego dado.
+
+    Args:
+    matriz_similitud (pd.DataFrame): Matriz de similitud entre juegos.
+    id_juego (int): ID del juego para encontrar los juegos similares.
+
+    Returns:
+    list or str: Lista de IDs de juegos similares o mensaje si el ID no se encuentra.
+    """
+    if id_juego in matriz_similitud.index:
+        similar_games = matriz_similitud.loc[id_juego].nlargest(11)[1:]  # Excluye el juego original
+        return similar_games.index.tolist()
+    else:
+        return "ID de juego no encontrado"
+
