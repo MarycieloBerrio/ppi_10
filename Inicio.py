@@ -3,7 +3,7 @@ Este módulo genera toda la pantalla de inicio, además
 de ser la página que streamlit lee por defecto para 
 mostrar al usuario la aplicación
 """
-
+# Importar las librerías requeridas
 import json
 import pandas as pd
 import streamlit as st
