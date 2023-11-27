@@ -1,7 +1,7 @@
 # Importar las librerías requeridas
 import sys
 # Agrega la ruta a la carpeta que contiene el script
-sys.path.append("C:\Juan\Semestre 2023-2\Programacion Para Ingenieria\GamersCompanion\ppi_10\misc")
+sys.path.append("misc")
 # Importa el script
 from generar_similitudes import cargar_datos_google_sheets, calcular_similitud_juegos, encontrar_juegos_similares
 import pandas as pd
