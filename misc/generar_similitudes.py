@@ -4,14 +4,6 @@ usuarios y entre juegos con la distancia del coseno.
 Además, la función generar recomendaciones para juegos, donde se
 utiliza la similitud entre juegos para obtener los 
 datos de los juegos más parecidos entre si.
-
-Ejemplo de uso del módulo:
-
-df_ratings = cargar_datos_google_sheets()
-user_id = 0  ID de usuario para el ejemplo
-
-sim_users = calcular_similitud_usuarios(df_ratings, user_id)
-sim_games = calcular_similitud_juegos(df_ratings, user_id)
 """
 
 # Importar las liberías requeridas
@@ -93,37 +85,7 @@ def calcular_similitud_juegos(df):
     return df_similarities
 
 
-def calcular_similitud_usuarios(df):
-    """
-    Calcula la matriz de similitud entre usuarios.
-
-    Args:
-    df (pd.DataFrame): DataFrame con los datos de usuarios y sus votaciones.
-
-    Returns:
-    pd.DataFrame: Matriz de similitud entre los usuarios.
-    """
-    # Duplicar el DataFrame original excluyendo la primera fila y la primera columna
-    df_copy = df.iloc[1:, 1:].copy()
-
-    # Convertir los valores a números si es necesario
-    df_copy = df_copy.apply(pd.to_numeric)
-
-    # Calcular la matriz de similitud del coseno manualmente (entre usuarios)
-    num_usuarios = df_copy.shape[0]
-    similarity_matrix = np.zeros((num_usuarios, num_usuarios))
-
-    for i in range(num_usuarios):
-        for j in range(num_usuarios):
-            similarity_matrix[i, j] = 1 - cosine(df_copy.iloc[i, :], df_copy.iloc[j, :])
-
-    # Almacenar los valores de similitud en la copia del DataFrame
-    df_similarities = pd.DataFrame(similarity_matrix, index=df_copy.index, columns=df_copy.index)
-    
-    return df_similarities
-
-
-def encontrar_juegos_similares(matriz_similitud, id_juego):
+def encontrar_juegos_similares(matriz_similitud:np.array, id_juego:str) -> list:
     """
     Encuentra los juegos más similares a un juego dado.
 
@@ -139,4 +101,7 @@ def encontrar_juegos_similares(matriz_similitud, id_juego):
         return similar_games.index.tolist()
     else:
         return "ID de juego no encontrado"
+
+
+a = cargar_datos_google_sheets()
 
